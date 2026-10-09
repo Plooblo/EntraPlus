@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Page not found | EntraPlus</title>
+  <meta name="description" content="That page doesn't exist.">
+  <meta name="robots" content="noindex">
+  <link rel="canonical" href="https://entraplus.co.uk/404.html">
+  <meta name="color-scheme" content="dark light">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="preload" href="/assets/fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/css/site.css">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("ep-theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        document.documentElement.dataset.theme = t;
+      } catch (e) { document.documentElement.dataset.theme = "dark"; }
+    })();
+  </script>
+  <script src="/assets/js/config.js" defer></script>
+  <script src="/assets/js/site.js" defer></script>
+</head>
+<body data-page="404">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="brand" href="/" aria-label="EntraPlus home"><img src="/favicon.svg" width="32" height="32" alt=""><span>EntraPlus</span></a>
+      <div class="header-actions">
+        <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch to light mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <main id="main" class="prose wrap">
+    <h1>That page doesn't exist</h1>
+    <p class="muted">The link may be old, or the address mistyped.</p>
+    <p class="cta-row"><a class="btn btn-primary" href="/">Go to the EntraPlus home page</a></p>
+  </main>
+  <footer class="site-footer site-footer-small">
+    <div class="wrap">
+      <p class="legal">© 2026 EntraPlus. EntraPlus is an independent product and is not affiliated with, endorsed by or sponsored by Microsoft. <a href="/privacy.html">Privacy and cookies</a></p>
+    </div>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

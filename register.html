@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create an account | EntraPlus</title>
+  <meta name="description" content="Create a free EntraPlus account to buy Pro and manage your licence key.">
+  <link rel="canonical" href="https://entraplus.co.uk/register.html">
+  <meta name="color-scheme" content="dark light">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="preload" href="/assets/fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/css/site.css">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("ep-theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        document.documentElement.dataset.theme = t;
+      } catch (e) { document.documentElement.dataset.theme = "dark"; }
+    })();
+  </script>
+  <script src="/assets/js/config.js" defer></script>
+  <script src="/assets/js/site.js" defer></script>
+  <script src="/assets/js/auth.js" defer></script>
+  <script src="/assets/js/account-pages.js" defer></script>
+</head>
+<body data-page="register">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="brand" href="/" aria-label="EntraPlus home"><img src="/favicon.svg" width="32" height="32" alt=""><span>EntraPlus</span></a>
+      <div class="header-actions">
+        <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch to light mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
+        </button>
+        <a class="btn btn-small" href="/login.html">Log in</a>
+      </div>
+    </div>
+  </header>
+  <main id="main" class="auth-main">
+    <div class="auth-card">
+      <h1>Create your account</h1>
+      <p class="auth-sub">You need an account to buy Pro and see your licence key. The app itself works without one.</p>
+      <p class="notice notice-plan" id="plan-note" hidden></p>
+      <p class="notice" id="demo-note" hidden>Preview mode: accounts are saved only in this browser and nothing is sent anywhere.</p>
+      <form id="register-form" novalidate>
+        <p class="form-error" role="alert" tabindex="-1" hidden></p>
+        <div class="field">
+          <label for="name">Your name</label>
+          <input id="name" name="name" type="text" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <label for="organisation">School or organisation <span class="optional">(optional)</span></label>
+          <input id="organisation" name="organisation" type="text" autocomplete="organization">
+        </div>
+        <div class="field">
+          <label for="email">Work email address</label>
+          <input id="email" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="new-password" minlength="10" required aria-describedby="password-hint">
+          <p class="hint" id="password-hint">At least 10 characters. A short sentence works well.</p>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Create account</button>
+        <p class="hint">By creating an account you agree to how we handle your details in our <a href="/privacy.html">privacy notice</a>.</p>
+      </form>
+      <div class="check-email" id="check-email" tabindex="-1" hidden>
+        <h2>Check your email</h2>
+        <p>We've sent a confirmation link to <strong id="check-email-address"></strong>. Open it to finish creating your account.</p>
+      </div>
+      <p class="auth-switch">Already have an account? <a href="/login.html">Log in</a></p>
+    </div>
+  </main>
+  <footer class="site-footer site-footer-small">
+    <div class="wrap">
+      <p class="legal">© 2026 EntraPlus. EntraPlus is an independent product and is not affiliated with, endorsed by or sponsored by Microsoft. <a href="/privacy.html">Privacy and cookies</a></p>
+    </div>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

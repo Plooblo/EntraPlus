@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy and cookies | EntraPlus</title>
+  <meta name="description" content="How EntraPlus handles your account details, payments and analytics cookies.">
+  <link rel="canonical" href="https://entraplus.co.uk/privacy.html">
+  <meta name="color-scheme" content="dark light">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="preload" href="/assets/fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/css/site.css">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("ep-theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        document.documentElement.dataset.theme = t;
+      } catch (e) { document.documentElement.dataset.theme = "dark"; }
+    })();
+  </script>
+  <script src="/assets/js/config.js" defer></script>
+  <script src="/assets/js/site.js" defer></script>
+</head>
+<body data-page="privacy">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="brand" href="/" aria-label="EntraPlus home"><img src="/favicon.svg" width="32" height="32" alt=""><span>EntraPlus</span></a>
+      <div class="header-actions">
+        <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch to light mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
+        </button>
+        <a class="btn btn-small" href="/">Back to EntraPlus</a>
+      </div>
+    </div>
+  </header>
+  <main id="main" class="prose wrap">
+    <h1>Privacy and cookies</h1>
+    <p class="muted">Last updated: October 2026. This is a starting template; have it checked before you take payments.</p>
+
+    <h2>The EntraPlus app</h2>
+    <p>The app runs on your computer and talks directly to Microsoft and your own domain controllers. Information about your users, devices, groups and policies is never sent to us. The app stores its settings, sign-in cache and activity log on your computer only.</p>
+
+    <h2>Your EntraPlus account</h2>
+    <p>When you create an account we store your name, organisation, email address and subscription status, so we can take payment and give you your licence key. Payments are handled by Stripe; we never see or store card details.</p>
+
+    <h2>Analytics cookies</h2>
+    <p>If you allow it, we use Google Analytics to understand which pages are useful. It isn't loaded unless you choose Allow analytics. You can change your mind at any time.</p>
+    <p><button type="button" class="btn btn-small" onclick="window.epResetConsent && window.epResetConsent()">Change my cookie choice</button></p>
+
+    <h2>Your rights</h2>
+    <p>You can ask to see, correct or delete the information we hold about you by emailing <a href="mailto:hello@entraplus.co.uk">hello@entraplus.co.uk</a>. You can also complain to the Information Commissioner's Office (ico.org.uk).</p>
+  </main>
+  <footer class="site-footer site-footer-small">
+    <div class="wrap">
+      <p class="legal">© 2026 EntraPlus. EntraPlus is an independent product and is not affiliated with, endorsed by or sponsored by Microsoft. <a href="/privacy.html">Privacy and cookies</a></p>
+    </div>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your account | EntraPlus</title>
+  <meta name="description" content="Your EntraPlus profile, plan and licence key.">
+  <meta name="robots" content="noindex">
+  <link rel="canonical" href="https://entraplus.co.uk/account.html">
+  <meta name="color-scheme" content="dark light">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="preload" href="/assets/fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/css/site.css">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("ep-theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        document.documentElement.dataset.theme = t;
+      } catch (e) { document.documentElement.dataset.theme = "dark"; }
+    })();
+  </script>
+  <script src="/assets/js/config.js" defer></script>
+  <script src="/assets/js/site.js" defer></script>
+  <script src="/assets/js/auth.js" defer></script>
+  <script src="/assets/js/account-pages.js" defer></script>
+</head>
+<body data-page="account">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="brand" href="/" aria-label="EntraPlus home"><img src="/favicon.svg" width="32" height="32" alt=""><span>EntraPlus</span></a>
+      <div class="header-actions">
+        <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch to light mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <main id="main" class="account-main wrap">
+    <div id="account-main" hidden>
+      <div class="account-head">
+        <h1 id="hello">Your account</h1>
+        <button type="button" class="btn btn-small" id="sign-out">Sign out</button>
+      </div>
+      <p class="notice" id="demo-note" hidden>Preview mode: accounts are saved only in this browser and nothing is sent anywhere.</p>
+
+      <div class="account-grid">
+        <section class="panel" aria-labelledby="plan-title">
+          <h2 id="plan-title">Plan and licence</h2>
+          <p class="notice notice-error" id="plan-error" role="alert" hidden></p>
+
+          <div id="plan-free" hidden>
+            <p class="plan-line"><span class="plan-badge" data-plan="Free">Free</span> You're on the free plan.</p>
+            <p class="muted">Pro adds hybrid Active Directory, Exchange, licences, the one-click leaver, bulk starters, device actions, BitLocker and LAPS, Conditional Access templates and CSV export.</p>
+            <div class="cta-row">
+              <a class="btn" id="buy-monthly">Pro monthly: £15 a month</a>
+              <a class="btn btn-primary" id="buy-yearly">Pro yearly: £120 a year</a>
+            </div>
+            <p class="hint" id="buy-unavailable" hidden>Payments aren't switched on yet. Check back soon.</p>
+          </div>
+
+          <div id="plan-pro" hidden>
+            <p class="plan-line"><span class="plan-badge" data-plan="Pro">Pro</span> <span id="pro-period"></span></p>
+            <p class="muted" id="pro-renews"></p>
+            <h3 class="key-title" id="key-label">Your licence key</h3>
+            <div class="key-box">
+              <code id="licence-key" aria-labelledby="key-label" aria-live="polite"></code>
+              <div class="key-actions">
+                <button type="button" class="btn btn-small" id="reveal-key" aria-pressed="false" aria-controls="licence-key">Reveal</button>
+                <button type="button" class="btn btn-small" id="copy-key">Copy</button>
+              </div>
+            </div>
+            <ol class="activate">
+              <li>Copy your licence key.</li>
+              <li>In EntraPlus, open Account and settings, then choose Enter a licence key.</li>
+              <li>Paste the key and press Activate.</li>
+            </ol>
+            <div class="cta-row">
+              <a class="btn btn-primary" id="download-app" href="/#download">Download EntraPlus</a>
+              <a class="btn" id="manage-billing" hidden>Manage billing or cancel</a>
+            </div>
+          </div>
+
+          <div class="demo-tools" id="demo-tools" hidden>
+            <p class="hint">Preview tools (demo mode only):</p>
+            <div class="cta-row">
+              <button type="button" class="btn btn-small" id="demo-monthly">Pretend I bought monthly</button>
+              <button type="button" class="btn btn-small" id="demo-yearly">Pretend I bought yearly</button>
+              <button type="button" class="btn btn-small" id="demo-free">Back to Free</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="profile-title">
+          <h2 id="profile-title">Profile</h2>
+          <form id="profile-form" novalidate>
+            <p class="form-error" role="alert" tabindex="-1" hidden></p>
+            <div class="field">
+              <label for="p-name">Your name</label>
+              <input id="p-name" name="name" type="text" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label for="p-org">School or organisation</label>
+              <input id="p-org" name="organisation" type="text" autocomplete="organization">
+            </div>
+            <div class="field">
+              <label for="p-email">Email address</label>
+              <input id="p-email" name="email" type="email" readonly aria-describedby="email-hint">
+              <p class="hint" id="email-hint">Contact us to change the email on your account.</p>
+            </div>
+            <button type="submit" class="btn btn-primary">Save profile</button>
+          </form>
+        </section>
+      </div>
+    </div>
+  </main>
+  <footer class="site-footer site-footer-small">
+    <div class="wrap">
+      <p class="legal">© 2026 EntraPlus. EntraPlus is an independent product and is not affiliated with, endorsed by or sponsored by Microsoft. <a href="/privacy.html">Privacy and cookies</a></p>
+    </div>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

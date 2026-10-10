@@ -242,3 +242,49 @@ grant update (role, status, seat) on public.members to authenticated;
 revoke all on function public.fit_seats(uuid) from public, anon, authenticated;
 grant execute on function public.account_state(), public.create_organisation(text), public.join_organisation(),
   public.my_tenant() to authenticated;
+
+-- =====================================================================================
+-- Desktop app sign-in
+--   app_codes     one-time codes that hand a website sign-in to the app (5 minutes, single use, PKCE-bound)
+--   app_sessions  each signed-in PC; the app holds a long random token, we only store its SHA-256 hash
+-- Only the app-auth server function (service role) writes these. People can see and end their own sessions.
+-- =====================================================================================
+create table if not exists public.app_codes (
+  code_hash   text primary key,
+  user_id     uuid not null references auth.users (id) on delete cascade,
+  challenge   text not null,
+  expires_at  timestamptz not null,
+  used        boolean not null default false
+);
+
+create table if not exists public.app_sessions (
+  id          uuid primary key default gen_random_uuid(),
+  token_hash  text not null unique,
+  user_id     uuid not null references auth.users (id) on delete cascade,
+  device      text not null default '',
+  created_at  timestamptz not null default now(),
+  last_seen   timestamptz not null default now(),
+  revoked     boolean not null default false
+);
+
+alter table public.app_codes    enable row level security;
+alter table public.app_sessions enable row level security;
+revoke all on public.app_codes, public.app_sessions from anon, authenticated;
+
+drop policy if exists own_sessions_read on public.app_sessions;
+create policy own_sessions_read on public.app_sessions for select to authenticated using (user_id = auth.uid());
+grant select (id, device, created_at, last_seen, revoked) on public.app_sessions to authenticated;
+
+create or replace function public.end_app_session(session_id uuid) returns void
+language sql security definer set search_path = public as $$
+  update app_sessions set revoked = true where id = session_id and user_id = auth.uid();
+$$;
+grant execute on function public.end_app_session(uuid) to authenticated;
+
+-- Tidy-up: expired codes and sessions unused for 90 days (the app-auth function also calls this).
+create or replace function public.prune_app_auth() returns void
+language sql security definer set search_path = public as $$
+  delete from app_codes where expires_at < now() - interval '1 day';
+  delete from app_sessions where revoked or last_seen < now() - interval '90 days';
+$$;
+revoke all on function public.prune_app_auth() from public, anon, authenticated;

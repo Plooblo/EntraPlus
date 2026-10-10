@@ -123,6 +123,7 @@
     var dl = (CONFIG.downloads || {}).installer;
     if (dl) $("#download-app").href = dl;
     renderSeat();
+    loadPcs();
     if (isManager) {
       loadSubscription();
       loadPeople();
@@ -180,6 +181,23 @@
         .then(function () { toast("Licence key copied"); }, fail);
     };
   }
+
+  /* ---------------- PCs signed in to the desktop app */
+  function loadPcs() {
+    auth.appSessions().then(function (rows) {
+      $("#pcs").hidden = !rows.length;
+      $("#pcs-list").innerHTML = rows.map(function (r) {
+        return '<li><span><strong>' + esc(r.device || "A PC") + '</strong><br><span class="hint">Last used ' +
+          esc(fmtDate(r.last_seen)) + '</span></span><button type="button" class="btn btn-small" data-pc="' + esc(r.id) +
+          '" aria-label="Sign out ' + esc(r.device || "this PC") + '">Sign out</button></li>';
+      }).join("");
+    }).catch(function () { $("#pcs").hidden = true; });
+  }
+  $("#pcs-list").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-pc]");
+    if (!b || !confirm("Sign this PC out of EntraPlus? It will use the Free plan until someone signs in again.")) return;
+    auth.endAppSession(b.getAttribute("data-pc")).then(function () { toast("PC signed out"); loadPcs(); }, fail);
+  });
 
   /* ---------------- manager: subscription */
   function link(base, extra) {

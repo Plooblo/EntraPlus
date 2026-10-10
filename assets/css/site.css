@@ -637,3 +637,11 @@ table.people select { min-height: 34px; padding: 0 8px; border-radius: 6px; bord
 .panel > .btn { margin-top: 12px; }
 
 #dashboard > * + * { margin-top: 20px; }
+
+/* app sign-in: who you're signing in as */
+.who { display: flex; align-items: center; gap: 14px; margin: 18px 0 8px; padding: 14px; border-radius: 10px; background: var(--raised); }
+.who-avatar { flex: none; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--accent); color: var(--on-accent); font-weight: 700; }
+.pcs { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
+.pcs li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 12px;
+  border-radius: 8px; background: var(--raised); }

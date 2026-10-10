@@ -17,6 +17,9 @@
      subscription(orgId)                   managers only
      invoices(orgId)                       managers only
      licenceKey()                          -> { key, expires, role } for someone with a Pro seat
+     createAppCode(challenge)              -> { code }   one-time code that signs the desktop app in
+     appSessions()                         -> PCs where this person is signed in to the app
+     endAppSession(id)                     signs one of those PCs out
 */
 (function () {
   "use strict";
@@ -157,6 +160,11 @@
       return Promise.resolve({ key: "DEMO-ONLY." + btoa(u.email + "|" + m.role).replace(/=+$/, "") + ".not-a-real-licence-key",
                                expires: sub.current_period_end.slice(0, 10), role: m.role });
     },
+    createAppCode: function () {
+      return fail("Signing in to the desktop app needs the live account system. It isn't available in preview mode.");
+    },
+    appSessions: function () { return Promise.resolve([]); },
+    endAppSession: function () { return Promise.resolve(); },
     /* demo only: pretend Stripe took a payment */
     simulatePurchase: function (orgId, period, seats) {
       var d = db(), end = new Date();
@@ -187,6 +195,15 @@
     return clientPromise;
   }
   function check(res) { if (res.error) throw new Error(res.error.message); return res.data; }
+  // Server functions put a friendly message in { error } when they refuse; surface that, not "non-2xx status".
+  function unwrap(res) {
+    if (!res.error) return res.data;
+    var ctx = res.error.context;
+    if (ctx && typeof ctx.json === "function") {
+      return ctx.json().then(function (b) { throw new Error((b && b.error) || res.error.message); });
+    }
+    throw new Error(res.error.message);
+  }
   function mapUser(u) {
     if (!u) return null;
     var m = u.user_metadata || {};
@@ -195,11 +212,11 @@
 
   var Supa = {
     mode: "supabase",
-    signInWithMicrosoft: function () {
+    signInWithMicrosoft: function (_demoEmail, returnPath) {
       return sb().then(function (c) {
         return c.auth.signInWithOAuth({ provider: "azure", options: {
           scopes: "openid profile email",
-          redirectTo: location.origin + "/account.html",
+          redirectTo: location.origin + (returnPath || "/account.html"),
           queryParams: { prompt: "select_account" } } });
       }).then(check);
     },
@@ -232,6 +249,20 @@
       return sb().then(function (c) {
         return c.from("invoices").select("*").eq("org_id", orgId).order("created", { ascending: false });
       }).then(check);
+    },
+    createAppCode: function (challenge) {
+      return sb().then(function (c) {
+        return c.functions.invoke("app-auth", { body: { action: "code", challenge: challenge } });
+      }).then(unwrap);
+    },
+    appSessions: function () {
+      return sb().then(function (c) {
+        return c.from("app_sessions").select("id, device, created_at, last_seen").eq("revoked", false)
+          .order("last_seen", { ascending: false });
+      }).then(check);
+    },
+    endAppSession: function (id) {
+      return sb().then(function (c) { return c.rpc("end_app_session", { session_id: id }); }).then(check);
     },
     licenceKey: function () {
       return sb().then(function (c) { return c.functions.invoke("member-licence", { method: "POST" }); })

@@ -79,7 +79,7 @@ It's worth putting that link in your onboarding email or FAQ.
 3. In the same section, switch **off** the Email provider, so nobody can create a password account.
 4. **Authentication > URL Configuration:**
    - **Site URL:** `https://entraplus.co.uk`
-   - **Redirect URLs:** `https://entraplus.co.uk/account.html` and, for testing on your PC, `http://localhost:8000/account.html`
+   - **Redirect URLs:** `https://entraplus.co.uk/account.html` and `https://entraplus.co.uk/app-signin.html`. For testing on your PC, add `http://localhost:8000/account.html` and `http://localhost:8000/app-signin.html` too.
 5. **SQL Editor:** paste in `supabase/schema.sql` and run it.
 6. **Project Settings > API:** copy the project URL and the publishable (anon) key into `assets/js/config.js`:
    ```js
@@ -111,6 +111,7 @@ supabase secrets set LICENCE_PRIVATE_KEY_PEM="$(cat ../../EntraPlus/tools/keys/p
 
 supabase functions deploy stripe-webhook --no-verify-jwt   # Stripe calls this, so it checks Stripe's signature instead
 supabase functions deploy member-licence                   # only signed-in people can call this
+supabase functions deploy app-auth --no-verify-jwt         # the desktop app's sign-in (it checks sessions itself)
 ```
 
 `LICENCE_PRIVATE_KEY_PEM` must be the private half of the key pair built into the app (`python tools/licence_tool.py keygen` in the EntraPlus project). It lives only here and in your offline backup.
@@ -170,12 +171,23 @@ If something doesn't update:
 3. Add a live webhook endpoint, then set the live `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` secrets.
 4. Put the live links in `config.js`.
 
-## Next: the desktop app
+## The desktop app's sign-in
 
-The app's sidebar Sign in button already opens the website. The next step is a third function, `app-licence`:
+The app's **Sign in** button (in the sidebar, and under Settings > Your EntraPlus account) works like this:
 
-1. The app opens the browser and the person signs in with Microsoft as above.
-2. The browser hands the app a one-time code, which the app swaps for a licence key.
-3. The app refreshes the key quietly every day.
+1. The app opens `entraplus.co.uk/app-signin.html` in the browser. If the person is already signed in on the website, they just confirm with **Continue to the app**; otherwise they sign in with Microsoft first.
+2. The browser hands a one-time code back to the app, which only listens on `127.0.0.1`.
+3. The app swaps the code for its own session, and receives the person's profile and licence key. Pro switches on automatically if they have a seat.
+4. The app refreshes all of this on start-up and every 6 hours. If the manager removes the seat, changes the role or the subscription ends, the app follows at the next refresh.
+5. **Advanced mode** follows the person's role: managers and senior technicians may use it; technicians can't, whatever the PC's setting.
 
-Licence keys already include the person's `role` and an `advanced` flag, so the app can then allow advanced mode only for managers and senior technicians, set centrally rather than per PC.
+**How the sign-in is protected:**
+- **Codes:** one-time, valid for 5 minutes, and only usable by the app that started the sign-in (PKCE).
+- **The session token:** stored on the PC encrypted for that Windows user (DPAPI). The server only keeps a scrambled (hashed) copy.
+- **Signing out:** people can sign any PC out from their account page.
+
+**Tested:** the sign-in was run end to end with the real `app-auth` function and the real app code, using an in-memory stand-in for the database. That covered the happy path, a reused code, a wrong verifier, a missing website session, a wrong state, a seat removed and given back, and sign-out ending the session.
+
+**Not yet tested:** the Windows encryption step, which can only run on Windows. If it ever fails on a PC, the app reports it rather than saving the session unprotected.
+
+Licence keys pasted by hand still work, for offline or locked-down PCs. A key from the signed-in account takes precedence while signed in.

@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /account.html
 Disallow: /login.html
+Disallow: /app-signin.html
 
 Sitemap: https://entraplus.co.uk/sitemap.xml

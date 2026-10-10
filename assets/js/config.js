@@ -13,9 +13,9 @@ window.EP_CONFIG = {
   // Accounts. "demo" keeps everything in this browser only (for building and testing pages).
   // Switch to "supabase" once your Supabase project is set up (see backend/README.md).
   auth: {
-    mode: "demo",
-    supabaseUrl: "",
-    supabaseAnonKey: ""
+    mode: "supabase",
+    supabaseUrl: "https://kqtgpazijcbssmzeazod.supabase.co",
+    supabaseAnonKey: "sb_publishable_F1lglI5wia1vXpzZ9gMUTA_K7QQ_UhN"
   },
 
   // Stripe Payment Links for each plan, and the customer portal link for "Change seats or plan".

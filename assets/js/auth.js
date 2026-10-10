@@ -177,6 +177,7 @@
       save(d);
       return Promise.resolve();
     },
+    cacheProfilePhoto: function () { return Promise.resolve(); },
     resetDemo: function () { localStorage.removeItem(DB_KEY); localStorage.removeItem(SESSION); return Promise.resolve(); }
   };
 
@@ -211,7 +212,7 @@
     signInWithMicrosoft: function (_demoEmail, returnPath) {
       return sb().then(function (c) {
         return c.auth.signInWithOAuth({ provider: "azure", options: {
-          scopes: "openid profile email",
+          scopes: "openid profile email User.Read",
           redirectTo: location.origin + (returnPath || "/account.html"),
           queryParams: { prompt: "select_account" } } });
       }).then(check);
@@ -220,6 +221,25 @@
     currentUser: function () {
       return sb().then(function (c) { return c.auth.getUser(); })
         .then(function (res) { return res.error ? null : mapUser(res.data.user); });
+    },
+    /* Right after a Microsoft sign-in, Supabase briefly holds a Microsoft token: use it once to save a small copy of
+       the person's profile photo in this browser for the header. Never sent anywhere else. */
+    cacheProfilePhoto: function () {
+      return sb().then(function (c) { return c.auth.getSession(); }).then(function (res) {
+        var s = res.data && res.data.session;
+        if (!s || !s.provider_token || !s.user) return;
+        var key = "ep-avatar:" + s.user.id;
+        return fetch("https://graph.microsoft.com/v1.0/me/photos/64x64/$value", { headers: { Authorization: "Bearer " + s.provider_token } })
+          .then(function (r) { return r.ok ? r.blob() : null; })
+          .then(function (blob) {
+            if (!blob) { localStorage.setItem(key, "none"); return; }
+            return new Promise(function (done) {
+              var fr = new FileReader();
+              fr.onload = function () { localStorage.setItem(key, fr.result); done(); };
+              fr.readAsDataURL(blob);
+            });
+          });
+      }).catch(function () { /* no photo is fine */ });
     },
     state: function () { return sb().then(function (c) { return c.rpc("account_state"); }).then(check); },
     createOrganisation: function (name) {

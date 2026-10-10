@@ -48,6 +48,7 @@
 
   auth.currentUser().then(function (user) {
     if (!user) { show("#step-signin"); return; }
+    if (auth.cacheProfilePhoto) auth.cacheProfilePhoto();
     // Same as the account page: someone from a tenant that's already on EntraPlus joins it (pending approval).
     return auth.state().then(function (s) {
       return !s.member && s.org ? auth.joinOrganisation().then(function () { return auth.state(); }) : s;

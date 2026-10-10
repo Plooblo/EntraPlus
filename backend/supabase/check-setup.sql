@@ -1,17 +1,18 @@
 -- EntraPlus: where is the database setup up to? Run in Supabase > SQL Editor. Changes nothing.
-with t(name) as (values ('organisations'), ('members'), ('subscriptions'), ('invoices'), ('app_codes'), ('app_sessions'))
+with t(name) as (values ('organisations'), ('members'), ('subscriptions'), ('invoices'), ('app_codes'), ('app_sessions'), ('admin_audit'))
 select 1 as ord, 'Table ' || t.name as check,
   case when c.oid is null then '!! missing: run schema.sql'
        when not c.relrowsecurity then '!! row level security is OFF'
-       when not has_table_privilege('service_role', 'public.' || t.name, 'INSERT') then '!! server role blocked: run fix-permissions.sql'
+       when t.name = 'admin_audit' and has_table_privilege('authenticated', 'public.admin_audit', 'SELECT') then '!! signed-in users can read the audit log'
+       when not has_table_privilege('service_role', 'public.' || t.name, 'INSERT') then '!! server role blocked: run fix-permissions.sql / update-admin.sql'
        else 'OK' end as result
 from t left join pg_class c on c.relname = t.name and c.relnamespace = 'public'::regnamespace
 union all
-select 2, 'Function ' || f, case when to_regprocedure('public.' || f) is null then '!! missing: run schema.sql'
+select 2, 'Function ' || f, case when to_regprocedure('public.' || f) is null then '!! missing: run update-admin.sql'
   when not has_function_privilege('service_role', 'public.' || f, 'EXECUTE') then '!! server role blocked: run fix-permissions.sql'
   else 'OK' end
 from unnest(array['account_state()', 'create_organisation(text)', 'join_organisation()', 'fit_seats(uuid)',
-                  'end_app_session(uuid)', 'prune_app_auth()']) f
+                  'end_app_session(uuid)', 'prune_app_auth()', 'licence_active(uuid)']) f
 union all
 select 3, 'Latest sign-in: ' || u.email,
   coalesce('tenant ' || coalesce(u.raw_user_meta_data -> 'custom_claims' ->> 'tid',

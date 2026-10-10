@@ -32,17 +32,20 @@ export async function standing(db: SupabaseClient, userId: string): Promise<Stan
   if (m.status !== "active") { out.reason = "Your manager hasn't approved your account yet."; return out; }
   if (!m.seat) { out.reason = "You don't have a Pro seat. Ask your EntraPlus manager for one."; return out; }
 
-  const { data: sub } = await db.from("subscriptions").select("status, period, current_period_end")
+  const { data: sub } = await db.from("subscriptions").select("status, period, current_period_end, source")
     .eq("org_id", m.org_id).maybeSingle();
-  if (!sub || sub.status !== "active" || !sub.current_period_end) {
-    out.reason = "Your organisation's EntraPlus subscription isn't active. Your manager can check Billing.";
+  if (!sub || sub.status !== "active" || !sub.current_period_end || new Date(sub.current_period_end) < new Date()) {
+    out.reason = sub?.source === "trial" && sub.status === "active"
+      ? "Your organisation's EntraPlus trial has ended. Your manager can buy seats to keep Pro."
+      : "Your organisation's EntraPlus subscription isn't active. Your manager can check Billing.";
     return out;
   }
   const end = new Date(sub.current_period_end);
   end.setUTCDate(end.getUTCDate() + GRACE_DAYS);
   const expires = end.toISOString().slice(0, 10);
   const key = await makeLicenceKey({ licenceId: `${m.org_id}:${userId}`, email: out.profile.email,
-                                     period: sub.period ?? "monthly", expires, org: m.org_id, role: m.role });
+                                     period: sub.source === "trial" ? "trial" : sub.period ?? "monthly", expires,
+                                     org: m.org_id, role: m.role });
   out.licence = { key, expires };
   return out;
 }

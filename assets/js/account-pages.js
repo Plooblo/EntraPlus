@@ -64,6 +64,7 @@
     auth.currentUser().then(function (u) {
       if (!u) { location.replace("/login.html"); return; }
       user = u;
+      if (auth.cacheProfilePhoto) auth.cacheProfilePhoto();
       $("#hello").textContent = u.name ? "Hello, " + u.name.split(" ")[0] : "Your account";
       $("#sign-out").onclick = function () { auth.signOut().then(function () { location.href = "/"; }); };
       return refresh();
@@ -185,11 +186,20 @@
   function loadSubscription() {
     auth.subscription(state.org.id).then(function (s) {
       subInfo = s;
-      var active = s.status === "active";
+      var expired = !!s.current_period_end && new Date(s.current_period_end) < new Date();
+      var active = s.status === "active" && !expired;
+      var granted = s.source === "trial" || s.source === "manual";
       var badge = $("#sub-badge");
-      badge.textContent = { active: "Pro", past_due: "Payment due", cancelled: "Cancelled", none: "Free" }[s.status] || s.status;
+      badge.textContent = expired && s.status === "active" ? (s.source === "trial" ? "Trial ended" : "Ended")
+        : active && s.source === "trial" ? "Trial"
+        : { active: "Pro", past_due: "Payment due", cancelled: "Cancelled", none: "Free" }[s.status] || s.status;
       badge.setAttribute("data-plan", active ? "Pro" : "Free");
-      $("#sub-plan").textContent = active
+      $("#sub-plan").textContent = active && s.source === "trial"
+        ? "Free trial of EntraPlus Pro for " + s.seats + " technician" + (s.seats === 1 ? "" : "s") + ". Choose a plan below to keep Pro afterwards."
+        : active && s.source === "manual"
+        ? "EntraPlus Pro for " + s.seats + " technician" + (s.seats === 1 ? "" : "s") + ", arranged with EntraPlus" + (s.note ? " (" + s.note + ")" : "") + "."
+        : expired && granted ? "Your " + (s.source === "trial" ? "trial" : "licence") + " has ended. Choose a plan to carry on with Pro."
+        : active
         ? "EntraPlus Pro, " + (s.period === "yearly" ? "yearly" : "monthly") + " for " + s.seats + " technician" + (s.seats === 1 ? "" : "s")
         : s.status === "past_due" ? "The last payment didn't go through. Update your card to keep Pro."
         : "No paid plan yet. Everyone in your organisation can use the Free plan.";
@@ -199,21 +209,22 @@
         facts.push(["Total", money(s.unit_amount * s.seats, s.currency) + (s.period === "yearly" ? " a year" : " a month") + " plus any VAT"]);
       }
       if (s.current_period_end) {
-        facts.push([s.cancel_at_period_end || s.status === "cancelled" ? "Ends" : "Renews", fmtDate(s.current_period_end)]);
+        facts.push([s.cancel_at_period_end || s.status === "cancelled" || granted || expired ? (expired ? "Ended" : "Ends") : "Renews",
+                    fmtDate(s.current_period_end)]);
       }
       $("#sub-facts").innerHTML = facts.map(function (f) {
         return "<div><dt>" + esc(f[0]) + "</dt><dd>" + esc(f[1]) + "</dd></div>";
       }).join("");
       var stripe = CONFIG.stripe || {};
       var ref = "client_reference_id=" + encodeURIComponent(state.org.id) + "&prefilled_email=" + encodeURIComponent(user.email || "");
-      $("#buy").hidden = active || s.status === "past_due";
+      $("#buy").hidden = (active && !granted) || s.status === "past_due";
       [["#buy-monthly", stripe.monthly], ["#buy-yearly", stripe.yearly]].forEach(function (b) {
         var a = $(b[0]);
         if (b[1]) { a.href = link(b[1], ref); a.removeAttribute("aria-disabled"); }
         else { a.removeAttribute("href"); a.setAttribute("aria-disabled", "true"); }
       });
       $("#buy-unavailable").hidden = !!(stripe.monthly || stripe.yearly) || auth.mode === "demo";
-      var hasBilling = s.status !== "none" && s.status !== "cancelled";
+      var hasBilling = s.status !== "none" && s.status !== "cancelled" && !granted;
       var ending = active && s.cancel_at_period_end;
       $("#manage-row").hidden = !hasBilling;
       $("#manage-hint").hidden = !hasBilling;

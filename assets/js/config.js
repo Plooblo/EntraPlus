@@ -18,10 +18,12 @@ window.EP_CONFIG = {
     supabaseAnonKey: ""
   },
 
-  // Stripe Payment Links for each plan, and the customer portal link for "Manage billing".
+  // Stripe Payment Links for each plan, and the customer portal link for "Change seats or plan".
+  // These are TEST-MODE links from the "EntraPlus sandbox" account: no real money moves.
+  // Swap them for live-mode links when you go live (see backend/README.md, "Going live").
   stripe: {
-    monthly: "",
-    yearly: "",
-    portal: ""
+    monthly: "https://buy.stripe.com/test_bJeaEXeoh2gi9BWg0w7Vm00",
+    yearly: "https://buy.stripe.com/test_3cI00j4NHf34cO801y7Vm01",
+    portal: "https://billing.stripe.com/p/login/test_bJeaEXeoh2gi9BWg0w7Vm00"
   }
 };

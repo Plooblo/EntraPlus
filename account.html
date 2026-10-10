@@ -42,79 +42,123 @@
     </div>
   </header>
   <main id="main" class="account-main wrap">
+    <p class="muted" id="loading">Loading your account…</p>
     <div id="account-main" hidden>
       <div class="account-head">
-        <h1 id="hello">Your account</h1>
+        <div>
+          <h1 id="hello">Your account</h1>
+          <p class="muted" id="org-line"></p>
+        </div>
         <button type="button" class="btn btn-small" id="sign-out">Sign out</button>
       </div>
       <p class="notice" id="demo-note" hidden>Preview mode: accounts are saved only in this browser and nothing is sent anywhere.</p>
+      <p class="notice notice-error" id="page-error" role="alert" hidden></p>
 
-      <div class="account-grid">
-        <section class="panel" aria-labelledby="plan-title">
-          <h2 id="plan-title">Plan and licence</h2>
-          <p class="notice notice-error" id="plan-error" role="alert" hidden></p>
-
-          <div id="plan-free" hidden>
-            <p class="plan-line"><span class="plan-badge" data-plan="Free">Free</span> You're on the free plan.</p>
-            <p class="muted">Pro adds hybrid Active Directory, Exchange, licences, the one-click leaver, bulk starters, device actions, BitLocker and LAPS, Conditional Access templates and CSV export.</p>
-            <div class="cta-row">
-              <a class="btn" id="buy-monthly">Pro monthly: £15 a month</a>
-              <a class="btn btn-primary" id="buy-yearly">Pro yearly: £120 a year</a>
-            </div>
-            <p class="hint" id="buy-unavailable" hidden>Payments aren't switched on yet. Check back soon.</p>
+      <!-- First person from a tenant -->
+      <section class="panel" id="setup" aria-labelledby="setup-title" hidden>
+        <h2 id="setup-title">Set up EntraPlus for your organisation</h2>
+        <p class="muted">You're the first person from your organisation to sign in. Name it below and you'll become its
+          manager: you'll choose a plan, and decide who gets a Pro seat. Colleagues join by signing in with their own
+          Microsoft work account; they'll appear in your dashboard to approve.</p>
+        <form id="setup-form" class="inline-form" novalidate>
+          <p class="form-error" role="alert" tabindex="-1" hidden></p>
+          <div class="field">
+            <label for="org-name">Organisation name</label>
+            <input id="org-name" name="orgName" type="text" autocomplete="organization" required minlength="2" maxlength="120">
           </div>
+          <button type="submit" class="btn btn-primary">Set up my organisation</button>
+        </form>
+      </section>
 
-          <div id="plan-pro" hidden>
-            <p class="plan-line"><span class="plan-badge" data-plan="Pro">Pro</span> <span id="pro-period"></span></p>
-            <p class="muted" id="pro-renews"></p>
-            <h3 class="key-title" id="key-label">Your licence key</h3>
-            <div class="key-box">
-              <code id="licence-key" aria-labelledby="key-label" aria-live="polite"></code>
-              <div class="key-actions">
-                <button type="button" class="btn btn-small" id="reveal-key" aria-pressed="false" aria-controls="licence-key">Reveal</button>
-                <button type="button" class="btn btn-small" id="copy-key">Copy</button>
+      <!-- Joined, waiting for a manager -->
+      <section class="panel" id="pending" aria-labelledby="pending-title" hidden>
+        <h2 id="pending-title">Waiting for approval</h2>
+        <p class="muted" id="pending-text"></p>
+        <button type="button" class="btn btn-small" id="pending-refresh">Check again</button>
+      </section>
+
+      <!-- Approved -->
+      <div id="dashboard" hidden>
+        <div class="account-grid">
+          <section class="panel" aria-labelledby="you-title">
+            <h2 id="you-title">Your EntraPlus</h2>
+            <p class="plan-line"><span class="plan-badge" id="role-badge"></span> <span id="seat-line"></span></p>
+            <div id="key-area" hidden>
+              <h3 class="key-title" id="key-label">Your licence key</h3>
+              <div class="key-box">
+                <code id="licence-key" aria-labelledby="key-label" aria-live="polite"></code>
+                <div class="key-actions">
+                  <button type="button" class="btn btn-small" id="reveal-key" aria-pressed="false" aria-controls="licence-key">Reveal</button>
+                  <button type="button" class="btn btn-small" id="copy-key">Copy</button>
+                </div>
+              </div>
+              <p class="hint" id="key-expiry"></p>
+              <ol class="activate">
+                <li>Copy your licence key.</li>
+                <li>In EntraPlus, open Settings, then choose Enter a licence key.</li>
+                <li>Paste it and press Activate.</li>
+              </ol>
+            </div>
+            <p class="muted" id="no-seat" hidden></p>
+            <div class="cta-row"><a class="btn btn-primary" id="download-app" href="/#download">Download EntraPlus</a></div>
+          </section>
+
+          <section class="panel manager-only" aria-labelledby="billing-title" hidden>
+            <h2 id="billing-title">Subscription</h2>
+            <p class="plan-line"><span class="plan-badge" id="sub-badge"></span> <span id="sub-plan"></span></p>
+            <dl class="facts" id="sub-facts"></dl>
+            <div id="buy" hidden>
+              <p class="muted">Choose a plan. You pick how many technician seats you need at checkout, and can change it any time.</p>
+              <div class="cta-row">
+                <a class="btn" id="buy-monthly">Monthly: £15 per technician</a>
+                <a class="btn btn-primary" id="buy-yearly">Yearly: £120 per technician (save £60)</a>
+              </div>
+              <p class="hint" id="buy-unavailable" hidden>Payments aren't switched on yet. Check back soon.</p>
+            </div>
+            <div class="cta-row" id="manage-row" hidden>
+              <a class="btn btn-primary" id="manage-billing">Change seats or plan</a>
+            </div>
+            <p class="hint" id="manage-hint" hidden>Opens Stripe's secure billing page, where you can add or remove seats, switch
+              between monthly and yearly, update your card, download invoices or cancel.</p>
+            <div class="demo-tools" id="demo-tools" hidden>
+              <p class="hint">Preview tools (demo mode only): pretend Stripe took a payment.</p>
+              <div class="cta-row">
+                <label class="hint" for="demo-seats">Seats</label>
+                <input id="demo-seats" type="number" min="1" max="100" value="3" class="small-number">
+                <button type="button" class="btn btn-small" id="demo-monthly">Buy monthly</button>
+                <button type="button" class="btn btn-small" id="demo-yearly">Buy yearly</button>
               </div>
             </div>
-            <ol class="activate">
-              <li>Copy your licence key.</li>
-              <li>In EntraPlus, open Account and settings, then choose Enter a licence key.</li>
-              <li>Paste the key and press Activate.</li>
-            </ol>
-            <div class="cta-row">
-              <a class="btn btn-primary" id="download-app" href="/#download">Download EntraPlus</a>
-              <a class="btn" id="manage-billing" hidden>Manage billing or cancel</a>
-            </div>
-          </div>
+          </section>
+        </div>
 
-          <div class="demo-tools" id="demo-tools" hidden>
-            <p class="hint">Preview tools (demo mode only):</p>
-            <div class="cta-row">
-              <button type="button" class="btn btn-small" id="demo-monthly">Pretend I bought monthly</button>
-              <button type="button" class="btn btn-small" id="demo-yearly">Pretend I bought yearly</button>
-              <button type="button" class="btn btn-small" id="demo-free">Back to Free</button>
-            </div>
+        <section class="panel manager-only" aria-labelledby="people-title" hidden>
+          <div class="panel-head">
+            <h2 id="people-title">People</h2>
+            <p class="muted" id="seat-count"></p>
+          </div>
+          <p class="hint">Colleagues join by signing in at entraplus.co.uk with their Microsoft work account; they appear here
+            to approve. Managers handle billing and people. Senior technicians can use advanced mode in the app;
+            technicians use basic mode.</p>
+          <div class="table-wrap">
+            <table class="people">
+              <caption class="sr-only">People in your organisation, their role and whether they have a Pro seat</caption>
+              <thead><tr><th scope="col">Person</th><th scope="col">Role</th><th scope="col">Pro seat</th><th scope="col">Status</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead>
+              <tbody id="people-body"></tbody>
+            </table>
           </div>
         </section>
 
-        <section class="panel" aria-labelledby="profile-title">
-          <h2 id="profile-title">Profile</h2>
-          <form id="profile-form" novalidate>
-            <p class="form-error" role="alert" tabindex="-1" hidden></p>
-            <div class="field">
-              <label for="p-name">Your name</label>
-              <input id="p-name" name="name" type="text" autocomplete="name" required>
-            </div>
-            <div class="field">
-              <label for="p-org">School or organisation</label>
-              <input id="p-org" name="organisation" type="text" autocomplete="organization">
-            </div>
-            <div class="field">
-              <label for="p-email">Email address</label>
-              <input id="p-email" name="email" type="email" readonly aria-describedby="email-hint">
-              <p class="hint" id="email-hint">Contact us to change the email on your account.</p>
-            </div>
-            <button type="submit" class="btn btn-primary">Save profile</button>
-          </form>
+        <section class="panel manager-only" aria-labelledby="history-title" hidden>
+          <h2 id="history-title">Purchase history</h2>
+          <div class="table-wrap">
+            <table class="people">
+              <caption class="sr-only">Invoices for your organisation</caption>
+              <thead><tr><th scope="col">Date</th><th scope="col">Invoice</th><th scope="col">Plan</th><th scope="col">Amount</th><th scope="col">Status</th></tr></thead>
+              <tbody id="history-body"></tbody>
+            </table>
+          </div>
+          <p class="hint" id="history-empty" hidden>No payments yet.</p>
         </section>
       </div>
     </div>

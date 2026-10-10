@@ -645,3 +645,14 @@ table.people select { min-height: 34px; padding: 0 8px; border-radius: 6px; bord
 .pcs { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
 .pcs li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 12px;
   border-radius: 8px; background: var(--raised); }
+
+/* signed-in badge in the header */
+.avatar-link { display: inline-grid; place-items: center; width: 38px; height: 38px; border-radius: 50%;
+  background: var(--accent); color: var(--on-accent); font-weight: 700; font-size: .9rem; text-decoration: none;
+  letter-spacing: .02em; flex: none; }
+.avatar-link:hover { background: var(--accent-hover); }
+.avatar-link:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+/* destructive button (cancel subscription) */
+.btn-danger { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 55%, transparent); }
+.btn-danger:hover { background: color-mix(in srgb, var(--bad) 10%, transparent); }

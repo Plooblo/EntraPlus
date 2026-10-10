@@ -130,6 +130,13 @@
       loadHistory();
       if (auth.mode === "demo") demoTools();
     }
+    if (params.get("billing")) {
+      toast(params.get("billing") === "cancelled"
+        ? "Subscription cancelled. Pro keeps working until the end of the paid period."
+        : "Billing updated. Changes can take a few seconds to appear.");
+      history.replaceState(null, "", "/account.html");
+      setTimeout(refresh, 3000);
+    }
     if (params.get("paid")) {
       toast("Thank you! Your subscription can take a few seconds to appear.");
       history.replaceState(null, "", "/account.html");
@@ -145,41 +152,11 @@
   function renderSeat() {
     var m = state.member;
     $("#seat-line").textContent = m.seat ? "You have a Pro seat." : "You don't have a Pro seat.";
-    $("#key-area").hidden = !m.seat;
-    $("#no-seat").hidden = m.seat;
-    if (!m.seat) {
-      $("#no-seat").textContent = m.role === "manager"
-        ? "Give yourself a seat in People below once you've chosen a plan, and your licence key will appear here."
-        : "EntraPlus works on the Free plan without one. Ask your manager for a Pro seat to unlock everything.";
-      return;
-    }
-    var field = $("#licence-key"), reveal = $("#reveal-key"), copy = $("#copy-key");
-    var masked = "•".repeat(32), key = null;
-    field.textContent = masked;
-    function getKey() {
-      if (key) return Promise.resolve(key);
-      return auth.licenceKey().then(function (r) {
-        key = r.key;
-        $("#key-expiry").textContent = "Valid until " + fmtDate(r.expires) + ". A fresh key is issued each time your subscription renews.";
-        return key;
-      });
-    }
-    reveal.onclick = function () {
-      var show = reveal.getAttribute("aria-pressed") !== "true";
-      if (!show) {
-        reveal.setAttribute("aria-pressed", "false"); reveal.textContent = "Reveal";
-        field.textContent = masked; field.classList.remove("is-revealed");
-        return;
-      }
-      getKey().then(function (k) {
-        reveal.setAttribute("aria-pressed", "true"); reveal.textContent = "Hide";
-        field.textContent = k; field.classList.add("is-revealed");
-      }).catch(fail);
-    };
-    copy.onclick = function () {
-      getKey().then(function (k) { return navigator.clipboard.writeText(k); })
-        .then(function () { toast("Licence key copied"); }, fail);
-    };
+    $("#seat-text").textContent = m.seat
+      ? "Sign in to the EntraPlus app with this account and Pro switches on automatically. There's nothing to copy or paste."
+      : m.role === "manager"
+        ? "Choose a plan, then give yourself a seat under People. Pro switches on in the app automatically."
+        : "EntraPlus works on the Free plan without one. Ask your manager for a Pro seat; it switches on in the app automatically.";
   }
 
   /* ---------------- PCs signed in to the desktop app */
@@ -236,12 +213,30 @@
         else { a.removeAttribute("href"); a.setAttribute("aria-disabled", "true"); }
       });
       $("#buy-unavailable").hidden = !!(stripe.monthly || stripe.yearly) || auth.mode === "demo";
-      var hasBilling = s.status !== "none";
+      var hasBilling = s.status !== "none" && s.status !== "cancelled";
+      var ending = active && s.cancel_at_period_end;
       $("#manage-row").hidden = !hasBilling;
       $("#manage-hint").hidden = !hasBilling;
-      if (stripe.portal) $("#manage-billing").href = link(stripe.portal, "prefilled_email=" + encodeURIComponent(user.email || ""));
+      $("#btn-seats").hidden = !active || ending;
+      $("#btn-cancel").hidden = !active || ending;
+      $("#btn-manage").textContent = ending ? "Keep my subscription" : s.status === "past_due" ? "Update payment details" : "Billing details and invoices";
+      $("#btn-manage").classList.toggle("btn-primary", ending || s.status === "past_due");
+      $("#cancel-note").hidden = !ending;
+      if (ending) {
+        $("#cancel-note").textContent = "Your subscription is cancelled and ends on " + fmtDate(s.current_period_end) +
+          ". Pro seats keep working until then. Changed your mind? Keep your subscription below.";
+      }
     }).catch(fail);
   }
+
+  $("#manage-row").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-billing]");
+    if (!b) return;
+    b.disabled = true;
+    auth.billingPortal(state.org.id, b.getAttribute("data-billing")).then(function (r) {
+      location.href = r.url;
+    }).catch(function (err) { b.disabled = false; fail(err); });
+  });
 
   /* ---------------- manager: people */
   function loadPeople() {

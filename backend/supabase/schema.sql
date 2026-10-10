@@ -288,3 +288,26 @@ language sql security definer set search_path = public as $$
   delete from app_sessions where revoked or last_seen < now() - interval '90 days';
 $$;
 revoke all on function public.prune_app_auth() from public, anon, authenticated;
+
+-- ------------------------------------------------------------------ server role access
+-- Supabase projects created after May 2026 don't grant API roles access to new tables automatically,
+-- so everything the server functions need is granted explicitly here.
+grant usage on schema public to service_role, authenticated;
+
+-- Server functions (Stripe webhook, member-licence, app-auth) read and write everything.
+grant select, insert, update, delete on
+  public.organisations, public.members, public.subscriptions, public.invoices,
+  public.app_codes, public.app_sessions
+to service_role;
+
+grant execute on function
+  public.fit_seats(uuid), public.prune_app_auth(),
+  public.account_state(), public.my_tenant(), public.is_member(uuid), public.is_manager(uuid),
+  public.create_organisation(text), public.join_organisation(), public.end_app_session(uuid)
+to service_role;
+
+-- Signed-in website users: unchanged rules, just stated explicitly so nothing depends on defaults.
+grant execute on function
+  public.account_state(), public.my_tenant(), public.is_member(uuid), public.is_manager(uuid),
+  public.create_organisation(text), public.join_organisation(), public.end_app_session(uuid)
+to authenticated;

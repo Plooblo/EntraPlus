@@ -14,7 +14,7 @@
 // (The app has no Supabase session, so the gateway check is off; "code" checks the website session itself.)
 
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { b64url, cors, json } from "../_shared/licence.ts";
+import { b64url, cors, json, publicKeyHex } from "../_shared/licence.ts";
 import { standing } from "../_shared/members.ts";
 
 const CODE_MINUTES = 5;
@@ -43,6 +43,15 @@ Deno.serve(async (req) => {
   try { body = await req.json(); } catch { return json({ error: "Bad request." }, 400); }
 
   switch (body.action) {
+    // ---- setup check: the public half of the signing key (safe to share)
+    case "public-key": {
+      try {
+        return json({ public_key: await publicKeyHex() });
+      } catch (err) {
+        return json({ error: (err as Error).message }, 500);
+      }
+    }
+
     // ---- 2. the website asks for a one-time code for the signed-in person
     case "code": {
       const challenge = String(body.challenge ?? "");

@@ -11,14 +11,35 @@ export function b64url(bytes: Uint8Array): string {
   return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
+// The signing key comes from either secret:
+//   LICENCE_PRIVATE_KEY      one line of hex (preferred: paste it into Supabase > Edge Functions > Secrets)
+//                            printed by  python tools/licence_tool.py server-secret
+//   LICENCE_PRIVATE_KEY_PEM  the PEM file's contents (older setup)
+const PKCS8_ED25519_PREFIX = "302e020100300506032b657004220420";
+
+function hexToBytes(hex: string): Uint8Array<ArrayBuffer> {
+  return Uint8Array.from(hex.match(/../g)!.map((h) => parseInt(h, 16)));
+}
+
+function privateKeyDer(): Uint8Array<ArrayBuffer> {
+  const hex = (Deno.env.get("LICENCE_PRIVATE_KEY") ?? "").trim().toLowerCase();
+  if (/^[0-9a-f]{64}$/.test(hex)) return hexToBytes(PKCS8_ED25519_PREFIX + hex);
+  const pem = Deno.env.get("LICENCE_PRIVATE_KEY_PEM") ?? "";
+  if (!pem.includes("PRIVATE KEY")) throw new Error("No licence signing key: set the LICENCE_PRIVATE_KEY secret.");
+  return Uint8Array.from(atob(pem.replace(/-----[^-]+-----/g, "").replace(/\s+/g, "")), (c) => c.charCodeAt(0));
+}
+
 let keyPromise: Promise<CryptoKey> | null = null;
 function signingKey(): Promise<CryptoKey> {
-  if (!keyPromise) {
-    const pem = Deno.env.get("LICENCE_PRIVATE_KEY_PEM")!;
-    const der = Uint8Array.from(atob(pem.replace(/-----[^-]+-----/g, "").replace(/\s+/g, "")), (c) => c.charCodeAt(0));
-    keyPromise = crypto.subtle.importKey("pkcs8", der, { name: "Ed25519" }, false, ["sign"]);
-  }
+  if (!keyPromise) keyPromise = crypto.subtle.importKey("pkcs8", privateKeyDer(), { name: "Ed25519" }, true, ["sign"]);
   return keyPromise;
+}
+
+/** The public half of the signing key, as hex. Not secret: it lets the setup checker confirm the app matches. */
+export async function publicKeyHex(): Promise<string> {
+  const jwk = await crypto.subtle.exportKey("jwk", await signingKey());
+  const raw = Uint8Array.from(atob(jwk.x!.replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0));
+  return Array.from(raw).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 export interface LicenceFields {

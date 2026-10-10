@@ -25,6 +25,15 @@ function periodEnd(sub: Stripe.Subscription): number {
   return (sub as any).current_period_end ?? (sub.items.data[0] as any)?.current_period_end;
 }
 
+// Stripe's newer API versions (2025-03 onwards, which new webhook endpoints use) moved an invoice's
+// subscription to invoice.parent.subscription_details.subscription. Accept both layouts.
+// deno-lint-ignore no-explicit-any
+function invoiceSubscription(inv: any): string | null {
+  const direct = typeof inv.subscription === "string" ? inv.subscription : inv.subscription?.id;
+  return direct ?? inv.parent?.subscription_details?.subscription
+    ?? inv.lines?.data?.[0]?.parent?.subscription_item_details?.subscription ?? null;
+}
+
 function statusOf(sub: Stripe.Subscription): "active" | "past_due" | "cancelled" {
   if (sub.status === "active" || sub.status === "trialing") return "active";
   if (sub.status === "past_due" || sub.status === "unpaid" || sub.status === "incomplete") return "past_due";
@@ -36,7 +45,10 @@ async function orgFor(subId: string, customerId: string, hint?: string | null): 
   const bySub = await db.from("subscriptions").select("org_id").eq("stripe_subscription", subId).maybeSingle();
   if (bySub.data) return bySub.data.org_id;
   const byCustomer = await db.from("subscriptions").select("org_id").eq("stripe_customer", customerId).maybeSingle();
-  return byCustomer.data?.org_id ?? null;
+  if (byCustomer.data) return byCustomer.data.org_id;
+  // Every subscription we've seen is tagged with its organisation, even ones that aren't the current one.
+  const sub = await stripe.subscriptions.retrieve(subId);
+  return sub.metadata?.org_id || null;
 }
 
 async function syncSubscription(subId: string, orgHint?: string | null): Promise<string | null> {
@@ -46,6 +58,25 @@ async function syncSubscription(subId: string, orgHint?: string | null): Promise
   if (!orgId) {
     console.warn(`No organisation for subscription ${sub.id}. Was client_reference_id set on the payment link?`);
     return null;
+  }
+  // Tag the subscription with its organisation first, so its invoices can always be matched.
+  if (sub.metadata?.org_id !== orgId) await stripe.subscriptions.update(sub.id, { metadata: { ...sub.metadata, org_id: orgId } });
+
+  // Stripe retries failed events for days and they can arrive in any order, so always decide from the
+  // subscription's CURRENT state (retrieved above), and never let one subscription overwrite another
+  // that is active. If an organisation somehow has two active subscriptions, the newest one counts.
+  const { data: current } = await db.from("subscriptions").select("stripe_subscription, status")
+    .eq("org_id", orgId).maybeSingle();
+  if (current?.stripe_subscription && current.stripe_subscription !== sub.id && current.status === "active") {
+    if (statusOf(sub) !== "active") {
+      console.log(`Ignoring ${sub.id} (${sub.status}): organisation ${orgId} has active ${current.stripe_subscription}`);
+      return orgId;
+    }
+    const other = await stripe.subscriptions.retrieve(current.stripe_subscription);
+    if (statusOf(other) === "active") {
+      console.warn(`Organisation ${orgId} has two active subscriptions (${other.id}, ${sub.id}). Cancel one in Stripe.`);
+      if (other.created > sub.created) return orgId;
+    }
   }
   const item = sub.items.data[0];
   const { error } = await db.from("subscriptions").upsert({
@@ -62,8 +93,6 @@ async function syncSubscription(subId: string, orgHint?: string | null): Promise
     updated_at: new Date().toISOString(),
   });
   if (error) throw error;
-  // Remember the organisation on the subscription itself, for any later event.
-  if (sub.metadata?.org_id !== orgId) await stripe.subscriptions.update(sub.id, { metadata: { ...sub.metadata, org_id: orgId } });
   // Fewer seats than people seated? Take seats back (managers keep theirs). New purchase? Seat the manager.
   const fit = await db.rpc("fit_seats", { o: orgId });
   if (fit.error) throw fit.error;
@@ -71,10 +100,14 @@ async function syncSubscription(subId: string, orgHint?: string | null): Promise
 }
 
 async function recordInvoice(inv: Stripe.Invoice): Promise<void> {
-  if (!inv.subscription) return;
-  const orgId = await orgFor(inv.subscription as string, inv.customer as string);
+  const subId = invoiceSubscription(inv);
+  if (!subId) return;
+  const orgId = await orgFor(subId, inv.customer as string);
   if (!orgId) return;
   const line = inv.lines.data[0];
+  // deno-lint-ignore no-explicit-any
+  const interval = (line as any)?.price?.recurring?.interval
+    ?? (await db.from("subscriptions").select("period").eq("org_id", orgId).maybeSingle()).data?.period;
   const { error } = await db.from("invoices").upsert({
     id: inv.id,
     org_id: orgId,
@@ -83,7 +116,7 @@ async function recordInvoice(inv: Stripe.Invoice): Promise<void> {
     amount: inv.total,
     currency: inv.currency,
     seats: line?.quantity ?? null,
-    period: line?.price?.recurring?.interval === "year" ? "yearly" : "monthly",
+    period: interval === "year" || interval === "yearly" ? "yearly" : "monthly",
     created: new Date(inv.created * 1000).toISOString(),
     hosted_url: inv.hosted_invoice_url,
     pdf_url: inv.invoice_pdf,
@@ -117,7 +150,8 @@ Deno.serve(async (req) => {
       case "invoice.paid":
       case "invoice.payment_failed": {
         const inv = event.data.object as Stripe.Invoice;
-        if (inv.subscription) await syncSubscription(inv.subscription as string);
+        const subId = invoiceSubscription(inv);
+        if (subId) await syncSubscription(subId);
         await recordInvoice(inv);
         break;
       }

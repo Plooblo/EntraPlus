@@ -16,7 +16,7 @@
      updateMember(orgId, userId, patch)    patch: { role?, status?, seat? }   (managers only)
      subscription(orgId)                   managers only
      invoices(orgId)                       managers only
-     licenceKey()                          -> { key, expires, role } for someone with a Pro seat
+     billingPortal(flow)                   -> { url } Stripe billing page for a manager ("manage" | "seats" | "cancel")
      createAppCode(challenge)              -> { code }   one-time code that signs the desktop app in
      appSessions()                         -> PCs where this person is signed in to the app
      endAppSession(id)                     signs one of those PCs out
@@ -151,14 +151,10 @@
       try { managerCheck(d, orgId); } catch (e) { return fail(e.message); }
       return Promise.resolve((d.invoices[orgId] || []).slice().reverse());
     },
-    licenceKey: function () {
-      var d = db(), u = me(d), m = membership(d, u.id);
-      if (!m || m.status !== "active") return fail("Your manager hasn't approved your account yet.");
-      if (!m.seat) return fail("You don't have a Pro seat yet. Ask your EntraPlus manager to give you one.");
-      var sub = d.subs[m.org_id];
-      if (!sub || sub.status !== "active") return fail("Your organisation's EntraPlus subscription isn't active.");
-      return Promise.resolve({ key: "DEMO-ONLY." + btoa(u.email + "|" + m.role).replace(/=+$/, "") + ".not-a-real-licence-key",
-                               expires: sub.current_period_end.slice(0, 10), role: m.role });
+    billingPortal: function (orgId, flow) {
+      var d = db(), sub = d.subs[orgId];
+      if (flow === "cancel" && sub) { sub.cancel_at_period_end = true; save(d); }
+      return Promise.resolve({ url: "/account.html?billing=" + (flow === "cancel" ? "cancelled" : "updated") });
     },
     createAppCode: function () {
       return fail("Signing in to the desktop app needs the live account system. It isn't available in preview mode.");
@@ -264,16 +260,10 @@
     endAppSession: function (id) {
       return sb().then(function (c) { return c.rpc("end_app_session", { session_id: id }); }).then(check);
     },
-    licenceKey: function () {
-      return sb().then(function (c) { return c.functions.invoke("member-licence", { method: "POST" }); })
-        .then(function (res) {
-          if (res.error) {
-            return res.error.context && res.error.context.json ? res.error.context.json().then(function (b) {
-              throw new Error(b.error || res.error.message);
-            }) : Promise.reject(res.error);
-          }
-          return res.data;
-        });
+    billingPortal: function (_orgId, flow) {
+      return sb().then(function (c) {
+        return c.functions.invoke("billing-portal", { body: { flow: flow || "manage" } });
+      }).then(unwrap);
     }
   };
 

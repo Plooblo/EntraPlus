@@ -18,7 +18,7 @@
   // --- what the app asked for (from the address, or saved before the Microsoft round trip)
   var q = new URLSearchParams(location.search), req = null;
   if (q.get("port")) {
-    req = { port: q.get("port"), state: q.get("state") || "", challenge: q.get("challenge") || "" };
+    req = { port: q.get("port"), state: q.get("state") || "", challenge: q.get("challenge") || "", mode: q.get("mode") || "" };
     sessionStorage.setItem(KEY, JSON.stringify(req));
     history.replaceState(null, "", "/app-signin.html");       // keep the details out of history and screenshots
   } else {
@@ -33,6 +33,11 @@
     return;
   }
   if (auth.mode === "demo") $("#demo-note").hidden = false;
+  if (req.mode === "register") {
+    document.querySelector("h1").textContent = "Create your EntraPlus account";
+    $("#app-sub").textContent = "There's no new password: you use the Microsoft work account you already have. " +
+      "If you're the first from your organisation, you'll set it up and become its manager.";
+  }
 
   $("#ms-signin").onclick = function () {
     $("#ms-signin").disabled = true;
@@ -54,7 +59,7 @@
       $("#who-org").textContent = s.org ? s.org.name + (s.member ? " · " + (ROLES[s.member.role] || s.member.role) : "") : "";
       var m = s.member;
       $("#who-note").textContent =
-        !m ? "You haven't joined an organisation on EntraPlus yet. You can still use the Free plan; set your organisation up from your account page."
+        !m ? "You're the first from your organisation. After continuing, set it up from your account page at entraplus.co.uk to buy Pro seats. Until then the app uses the Free plan."
         : m.status === "pending" ? "Your manager hasn't approved you yet. The app will use the Free plan until they do."
         : m.seat ? "Your Pro seat will switch on in the app automatically."
         : "You don't have a Pro seat yet, so the app will use the Free plan until your manager gives you one.";

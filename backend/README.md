@@ -11,7 +11,7 @@ This sets up the account system end to end:
    - **Technician:** basic mode only.
 5. Only managers see the subscription, renewal or expiry date, prices and purchase history.
 6. The manager buys seats with **Stripe** (£15 per technician a month or £120 a year). Seat changes, plan switches, card updates, invoices and cancelling all happen on Stripe's secure billing page.
-7. Anyone with a seat reveals their **licence key** on the account page. Keys expire 3 days after the paid period ends, and renewals issue fresh ones.
+7. Anyone with a seat signs in to the **EntraPlus app** with the same account and Pro switches on automatically. Nobody sees, copies or types a licence key. Behind the scenes the server sends the app a signed pass for the seat, which expires 3 days after the paid period ends and is renewed automatically.
 
 The pieces:
 
@@ -107,14 +107,15 @@ supabase link --project-ref YOUR-PROJECT-REF
 supabase secrets set STRIPE_SECRET_KEY=sk_test_...          # Stripe > Developers > API keys (sandbox)
 supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_...        # from step 4
 supabase secrets set SITE_ORIGIN=https://entraplus.co.uk
-supabase secrets set LICENCE_PRIVATE_KEY_PEM="$(cat ../../EntraPlus/tools/keys/private_key.pem)"
+# The signing key is ONE line: get it with  python tools/licence_tool.py server-secret  (in the EntraPlus folder),
+# then paste it in Supabase > Edge Functions > Secrets as LICENCE_PRIVATE_KEY (easier than the command line on Windows).
 
 supabase functions deploy stripe-webhook --no-verify-jwt   # Stripe calls this, so it checks Stripe's signature instead
-supabase functions deploy member-licence                   # only signed-in people can call this
+supabase functions deploy billing-portal                   # managers' billing buttons (signed-in only)
 supabase functions deploy app-auth --no-verify-jwt         # the desktop app's sign-in (it checks sessions itself)
 ```
 
-`LICENCE_PRIVATE_KEY_PEM` must be the private half of the key pair built into the app (`python tools/licence_tool.py keygen` in the EntraPlus project). It lives only here and in your offline backup.
+`LICENCE_PRIVATE_KEY` must be the private half of the key pair built into the app. Check they match any time with `python tools/licence_tool.py status`, which compares the app, your private key file and the live server. If you deployed an earlier version with `member-licence`, you can delete that function: nothing uses it now.
 
 ## 4. Stripe webhook
 
@@ -142,9 +143,9 @@ Commit and push the site as usual. `config.js` now has the Stripe test links and
 - **Not signed in:** "Sign in with Microsoft" (or "Continue with Microsoft" on the register page).
 - **First from their organisation:** they name the organisation and become its manager.
 - **Colleague:** "Waiting for approval: ask *Jack Taylor* to approve you."
-- **Technician or senior technician:** their role, whether they have a seat, and their licence key with Reveal and Copy. There's no billing information at all.
+- **Technician or senior technician:** their role, whether they have a seat, and the PCs they're signed in on. There's no billing information at all.
 - **Manager**, in addition:
-  - **Subscription:** plan, seats, price per seat, total, and the renewal or end date. Buy buttons if there's no plan yet, otherwise "Change seats or plan", which opens Stripe.
+  - **Subscription:** plan, seats, price per seat, total, and the renewal or end date. Buy buttons if there's no plan yet. Otherwise **Change seats or plan**, **Billing details and invoices** and **Cancel subscription**, which open Stripe's billing page already signed in. After cancelling, the page shows the end date and a **Keep my subscription** button.
   - **People:** approve or decline, role, a Pro seat switch, and remove. The seat limit and the always-one-manager rule are enforced by the database, not just the page.
   - **Purchase history:** date, invoice number with link and PDF, seats, amount and status.
 
@@ -155,7 +156,7 @@ When a manager reduces seats in Stripe, seats are taken back automatically. Mana
 1. Sign in with your work account and set up your organisation.
 2. Ask a colleague to sign in, or use a second account in your tenant. They show as waiting in your People list.
 3. Click **Yearly**, choose 2 seats, and pay with the test card `4242 4242 4242 4242` (any future date, any CVC).
-4. Back on the account page, the subscription shows "yearly for 2 technicians" and you have a seat. Reveal your key and paste it into the app (Settings > Enter a licence key).
+4. Back on the account page, the subscription shows "yearly for 2 technicians" and you have a seat. Open the app, sign in with the same account, and Pro switches on.
 5. Approve your colleague, make them a senior technician and give them the second seat. A third seat should be refused.
 6. **Change seats or plan:** reduce to 1 seat in Stripe's portal. Your colleague loses their seat and you keep yours.
 7. Check Purchase history shows the invoice.
@@ -177,7 +178,7 @@ The app's **Sign in** button (in the sidebar, and under Settings > Your EntraPlu
 
 1. The app opens `entraplus.co.uk/app-signin.html` in the browser. If the person is already signed in on the website, they just confirm with **Continue to the app**; otherwise they sign in with Microsoft first.
 2. The browser hands a one-time code back to the app, which only listens on `127.0.0.1`.
-3. The app swaps the code for its own session, and receives the person's profile and licence key. Pro switches on automatically if they have a seat.
+3. The app swaps the code for its own session, and receives the person's profile and a signed pass for their seat. Pro switches on automatically if they have one.
 4. The app refreshes all of this on start-up and every 6 hours. If the manager removes the seat, changes the role or the subscription ends, the app follows at the next refresh.
 5. **Advanced mode** follows the person's role: managers and senior technicians may use it; technicians can't, whatever the PC's setting.
 

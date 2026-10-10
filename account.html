@@ -24,6 +24,7 @@
     })();
   </script>
   <script src="/assets/js/config.js" defer></script>
+  <script src="/assets/js/header-account.js" defer></script>
   <script src="/assets/js/site.js" defer></script>
   <script src="/assets/js/auth.js" defer></script>
   <script src="/assets/js/account-pages.js" defer></script>
@@ -83,23 +84,7 @@
           <section class="panel" aria-labelledby="you-title">
             <h2 id="you-title">Your EntraPlus</h2>
             <p class="plan-line"><span class="plan-badge" id="role-badge"></span> <span id="seat-line"></span></p>
-            <div id="key-area" hidden>
-              <h3 class="key-title" id="key-label">Your licence key</h3>
-              <div class="key-box">
-                <code id="licence-key" aria-labelledby="key-label" aria-live="polite"></code>
-                <div class="key-actions">
-                  <button type="button" class="btn btn-small" id="reveal-key" aria-pressed="false" aria-controls="licence-key">Reveal</button>
-                  <button type="button" class="btn btn-small" id="copy-key">Copy</button>
-                </div>
-              </div>
-              <p class="hint" id="key-expiry"></p>
-              <ol class="activate">
-                <li>Copy your licence key.</li>
-                <li>In EntraPlus, open Settings, then choose Enter a licence key.</li>
-                <li>Paste it and press Activate.</li>
-              </ol>
-            </div>
-            <p class="muted" id="no-seat" hidden></p>
+            <p class="muted" id="seat-text"></p>
             <div class="cta-row"><a class="btn btn-primary" id="download-app" href="/#download">Download EntraPlus</a></div>
             <div id="pcs" hidden>
               <h3 class="key-title">Signed in to the app on</h3>
@@ -119,11 +104,14 @@
               </div>
               <p class="hint" id="buy-unavailable" hidden>Payments aren't switched on yet. Check back soon.</p>
             </div>
+            <p class="notice" id="cancel-note" hidden></p>
             <div class="cta-row" id="manage-row" hidden>
-              <a class="btn btn-primary" id="manage-billing">Change seats or plan</a>
+              <button type="button" class="btn btn-primary" data-billing="seats" id="btn-seats">Change seats or plan</button>
+              <button type="button" class="btn" data-billing="manage" id="btn-manage">Billing details and invoices</button>
+              <button type="button" class="btn btn-danger" data-billing="cancel" id="btn-cancel">Cancel subscription</button>
             </div>
-            <p class="hint" id="manage-hint" hidden>Opens Stripe's secure billing page, where you can add or remove seats, switch
-              between monthly and yearly, update your card, download invoices or cancel.</p>
+            <p class="hint" id="manage-hint" hidden>These open Stripe's secure billing page. Cancelling keeps Pro working
+              until the end of the period you've paid for.</p>
             <div class="demo-tools" id="demo-tools" hidden>
               <p class="hint">Preview tools (demo mode only): pretend Stripe took a payment.</p>
               <div class="cta-row">

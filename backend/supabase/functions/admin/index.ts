@@ -14,13 +14,24 @@ import { resyncOrganisation, stripe } from "../_shared/billing.ts";
 const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, {
   auth: { persistSession: false },
 });
-const ADMINS = (Deno.env.get("ADMIN_USER_IDS") ?? "").split(",").map((s) => s.trim()).filter(Boolean);
-const cors = {
-  "Access-Control-Allow-Origin": Deno.env.get("ADMIN_ORIGIN") ?? "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Cache-Control": "no-store",
-};
+// Forgiving about how the secrets were typed: commas, spaces, new lines, quotes and trailing slashes are all fine.
+const tidy = (v: string) => v.trim().replace(/^["']|["']$/g, "").replace(/\/+$/, "").toLowerCase();
+const ADMINS = (Deno.env.get("ADMIN_USER_IDS") ?? "").split(/[\s,;]+/).map(tidy).filter(Boolean);
+const ORIGINS = (Deno.env.get("ADMIN_ORIGIN") ?? "").split(/[\s,;]+/).map(tidy).filter(Boolean);
+
+// Security comes from the sign-in check on every request; CORS only decides which web pages may call us.
+function corsFor(req: Request): Record<string, string> {
+  const origin = req.headers.get("Origin") ?? "";
+  const allowed = !ORIGINS.length || ORIGINS.includes(tidy(origin));
+  return {
+    "Access-Control-Allow-Origin": allowed ? origin || "*" : ORIGINS[0],
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Cache-Control": "no-store",
+    "Vary": "Origin",
+  };
+}
+let cors: Record<string, string> = corsFor(new Request("http://x"));
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
 const DAY = 86_400_000;
@@ -233,13 +244,14 @@ async function recentAudit() {
 
 // ---------------------------------------------------------------- entry
 Deno.serve(async (req) => {
+  cors = corsFor(req);
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   const jwt = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
   const { data: auth } = await db.auth.getUser(jwt);
   const user = auth?.user;
   if (!user) return json({ error: "Please sign in again." }, 401);
   const viaMicrosoft = (user.identities ?? []).some((i) => i.provider === "azure") || user.app_metadata?.provider === "azure";
-  if (!viaMicrosoft || !ADMINS.includes(user.id)) {
+  if (!viaMicrosoft || !ADMINS.includes(user.id.toLowerCase())) {
     return json({ error: "This account isn't an EntraPlus admin.", your_user_id: user.id, email: user.email }, 403);
   }
   const admin = user.email ?? user.id;

@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Features: EntraPlus for school IT teams</title>
+  <meta name="description" content="See how EntraPlus saves school IT teams hours every week: a dashboard that flags low licences and locked-out accounts, saved filters, Active Directory clean-up, BitLocker in seconds and one-click leavers.">
+  <link rel="canonical" href="https://entraplus.co.uk/features.html">
+  <meta name="theme-color" content="#0D1824" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#F4F7F9" media="(prefers-color-scheme: light)">
+  <meta name="color-scheme" content="dark light">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="EntraPlus">
+  <meta property="og:url" content="https://entraplus.co.uk/features.html">
+  <meta property="og:title" content="EntraPlus features: hours back every week">
+  <meta property="og:description" content="Starters, leavers, devices, groups and Active Directory in one calm Windows app. The jobs that eat your week, done in a click or two.">
+  <meta property="og:image" content="https://entraplus.co.uk/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="EntraPlus showing a user's details, status badges and account actions">
+  <meta property="og:locale" content="en_GB">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+
+  <link rel="preload" href="/assets/fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" as="image" href="/assets/img/shots/dark-users-1600.webp"
+        imagesrcset="/assets/img/shots/dark-users-960.webp 960w, /assets/img/shots/dark-users-1600.webp 1600w"
+        imagesizes="(min-width: 1240px) 1160px, 94vw" fetchpriority="high">
+  <link rel="stylesheet" href="/assets/css/site.css">
+  <script>
+    /* Set the theme before the page paints, so there's no flash. */
+    (function () {
+      try {
+        var t = localStorage.getItem("ep-theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        document.documentElement.dataset.theme = t;
+      } catch (e) { document.documentElement.dataset.theme = "dark"; }
+    })();
+  </script>
+  <script src="/assets/js/config.js" defer></script>
+  <script src="/assets/js/header-account.js" defer></script>
+  <script src="/assets/js/site.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="brand" href="/" aria-label="EntraPlus home">
+        <img src="/favicon.svg" width="32" height="32" alt="">
+        <span>EntraPlus</span>
+      </a>
+      <nav class="site-nav" id="site-nav" aria-label="Main">
+        <a href="/features.html" aria-current="page">Features</a>
+        <a href="/#time">Time saved</a>
+        <a href="/#pricing">Pricing</a>
+        <a href="/#faq">Questions</a>
+        <a href="/login.html" class="nav-login">Log in</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch to light mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
+        </button>
+        <a class="btn btn-primary btn-small" href="/#download">Download free</a>
+        <button class="icon-btn menu-btn" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="features-hero" aria-labelledby="features-title">
+      <div class="wrap">
+        <h1 id="features-title">Built for the jobs that eat your week.</h1>
+        <p class="lede">Everything a school IT team does in Microsoft 365, Intune and Active Directory, in one calm Windows app. Here's where the hours come back.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="/#download">Download free for Windows</a>
+          <a class="btn" href="/#pricing">See what Pro adds</a>
+        </div>
+        <nav aria-label="Jump to a feature"><ul class="feature-jump"><li><a href="#dashboard">Dashboard</a></li><li><a href="#filters">Filters</a></li><li><a href="#active-directory">Active Directory</a></li><li><a href="#devices">Devices</a></li><li><a href="#people">People</a></li><li><a href="#leavers">Starters and leavers</a></li><li><a href="#groups">Groups</a></li><li><a href="#apps-policies">Apps and policies</a></li><li><a href="#team">Your team</a></li></ul></nav>
+      </div>
+    </section>
+
+    <section class="feature" id="dashboard" aria-labelledby="dashboard-title">
+      <div class="wrap feature-grid">
+        <div class="feature-copy">
+          <p class="kicker">Dashboard</p>
+          <h2 id="dashboard-title">Know what needs you before anyone asks</h2>
+          <p>Open EntraPlus in the morning and the problems are already waiting for you, each one a click away from being fixed.</p>
+          <ul class="feature-points">
+            <li>Licences running low turn amber while there's still time to order, with staff A1, A3 and A5 first</li>
+            <li>Accounts locked out in Active Directory, before the phone rings</li>
+            <li>Devices failing compliance, and computers not seen on the network for 90 days</li>
+            <li>Quick jobs you choose yourself: move a PC, unlock someone, find a BitLocker key</li>
+          </ul>
+          <p class="saves"><strong>Saves:</strong> the morning tour of four admin centres, every day.</p>
+        </div>
+        <figure>
+          <div class="window">
+            <div class="window-bar" aria-hidden="true"><span></span><span></span><span></span><b>EntraPlus</b></div>
+            <img src="/assets/img/shots/dark-dashboard-1600.webp"
+                 srcset="/assets/img/shots/dark-dashboard-960.webp 960w, /assets/img/shots/dark-dashboard-1600.webp 1600w"
+                 sizes="(min-width: 960px) 680px, 94vw" width="1600" height="1006" loading="lazy" alt="The EntraPlus dashboard: counts of users and devices, staff licences with only 4 left, 3 accounts locked out and 18 stale computers flagged under Needs attention">
+          </div>
+          <figcaption>Needs attention lists licences running low, locked-out accounts and stale computers, and each one opens the right list.</figcaption>
+        </figure>
+      </div>
+    </section>
+    <section class="feature flip" id="filters" aria-labelledby="filters-title">
+      <div class="wrap feature-grid">
+        <div class="feature-copy">
+          <p class="kicker">Filters</p>
+          <h2 id="filters-title">Find exactly who or what you need, in seconds</h2>
+          <p>Ready-made filters for the questions you ask every week, and your own for the ones only your school asks. Save them, use them again tomorrow.</p>
+          <ul class="feature-points">
+            <li>Disabled accounts, locked out, created this week, not signed in for 90 days</li>
+            <li>Computers not seen for 90 days, still on Windows 10, or missing a description</li>
+            <li>Build your own from any combination, like Science staff who haven't signed in this half term</li>
+            <li>Export exactly what's on screen to CSV for governors, auditors or a spreadsheet</li>
+          </ul>
+          <p class="saves"><strong>Saves:</strong> the exports, spreadsheet filters and copy-and-paste behind every report.</p>
+        </div>
+        <figure>
+          <div class="window">
+            <div class="window-bar" aria-hidden="true"><span></span><span></span><span></span><b>EntraPlus</b></div>
+            <img src="/assets/img/shots/dark-filter-1600.webp"
+                 srcset="/assets/img/shots/dark-filter-960.webp 960w, /assets/img/shots/dark-filter-1600.webp 1600w"
+                 sizes="(min-width: 960px) 680px, 94vw" width="1600" height="1006" loading="lazy" alt="Building a custom filter in EntraPlus: department is Science, last sign-in more than 60 days ago, status enabled, saved as Science staff not signed in this half term">
+          </div>
+          <figcaption>Combine conditions and save the filter with a name you'll recognise. It's there in the list next time.</figcaption>
+        </figure>
+      </div>
+    </section>
+    <section class="feature" id="active-directory" aria-labelledby="active-directory-title">
+      <div class="wrap feature-grid">
+        <div class="feature-copy">
+          <p class="kicker">Active Directory</p>
+          <h2 id="active-directory-title">Your whole domain, without the server console</h2>
+          <p>Browse your OU tree, see who and what is in each OU, and move them with a drag. No remote desktop to a domain controller.</p>
+          <ul class="feature-points">
+            <li>Drag a whole classroom of computers onto a new OU in one go</li>
+            <li>Find stale computers and switch them off or delete them, with a confirmation each time</li>
+            <li>Unlock accounts, reset passwords and enable or disable from the same screen</li>
+            <li>BitLocker keys and LAPS passwords stored in AD, as well as in Entra</li>
+          </ul>
+          <p class="saves"><strong>Saves:</strong> remoting into a server for every AD job.</p>
+        </div>
+        <figure>
+          <div class="window">
+            <div class="window-bar" aria-hidden="true"><span></span><span></span><span></span><b>EntraPlus</b></div>
+            <img src="/assets/img/shots/dark-ad-computers-1600.webp"
+                 srcset="/assets/img/shots/dark-ad-computers-960.webp 960w, /assets/img/shots/dark-ad-computers-1600.webp 1600w"
+                 sizes="(min-width: 960px) 680px, 94vw" width="1600" height="1006" loading="lazy" alt="EntraPlus Active Directory computers: the OU tree, computers filtered to those not seen for 90 days, and actions for the selected computer">
+          </div>
+          <figcaption>Computers not seen for 90 days, ready to move, disable or delete. The OU tree is on the left; drag to move.</figcaption>
+        </figure>
+      </div>
+    </section>
+    <section class="feature flip" id="devices" aria-labelledby="devices-title">
+      <div class="wrap feature-grid">
+        <div class="feature-copy">
+          <p class="kicker">Devices</p>
+          <h2 id="devices-title">BitLocker keys and admin passwords in ten seconds</h2>
+          <p>When someone's staring at the BitLocker recovery screen, you don't want four clicks through Intune. Type the device, read out the key.</p>
+          <ul class="feature-points">
+            <li>Every Intune device with compliance, last check-in, encryption and storage</li>
+            <li>Filters for not compliant, not checked in for 30 days, unencrypted or personal devices</li>
+            <li>Sync, restart, retire or wipe, with the dangerous ones behind a typed confirmation</li>
+            <li>Each time a key or password is viewed, it's written to the activity log</li>
+          </ul>
+          <p class="saves"><strong>Saves:</strong> about five minutes per recovery key, and a long silence on the phone.</p>
+        </div>
+        <figure>
+          <div class="window">
+            <div class="window-bar" aria-hidden="true"><span></span><span></span><span></span><b>EntraPlus</b></div>
+            <img src="/assets/img/shots/after-bitlocker-1600.webp"
+                 srcset="/assets/img/shots/after-bitlocker-960.webp 960w, /assets/img/shots/after-bitlocker-1600.webp 1600w"
+                 sizes="(min-width: 960px) 680px, 94vw" width="1600" height="1006" loading="lazy" alt="EntraPlus showing a BitLocker recovery key for a laptop, with the key ID to match against the recovery screen">
+          </div>
+          <figcaption>The key ID to match, the key itself, and a Copy button. That's the whole job.</figcaption>
+        </figure>
+      </div>
+    </section>
+    <section class="feature" id="people" aria-labelledby="people-title">
+      <div class="wrap feature-grid">
+        <div class="feature-copy">
+          <p class="kicker">People</p>
+          <h2 id="people-title">One screen for every account</h2>
+          <p>Whether an account lives in Microsoft 365, Exchange or on-premises Active Directory, it's the same screen, and every field shows where it's saved.</p>
+          <ul class="feature-points">
+            <li>Hybrid accounts edited in AD, cloud accounts in Entra, mailboxes in Exchange, all from one form</li>
+            <li>Changes stay highlighted until you save, and can be undone</li>
+            <li>Reset passwords, unlock, sign out everywhere, and manage groups and licences</li>
+            <li>Sign-in names build themselves for new starters, so typos can't happen</li>
+          </ul>
+          <p class="saves"><strong>Saves:</strong> switching between three admin consoles to change one person.</p>
+        </div>
+        <figure>
+          <div class="window">
+            <div class="window-bar" aria-hidden="true"><span></span><span></span><span></span><b>EntraPlus</b></div>
+            <img src="/assets/img/shots/dark-users-1600.webp"
+                 srcset="/assets/img/shots/dark-users-960.webp 960w, /assets/img/shots/dark-users-1600.webp 1600w"
+                 sizes="(min-width: 960px) 680px, 94vw" width="1600" height="1006" loading="lazy" alt="EntraPlus user screen: Jane Smith, synced from Active Directory, every field labelled AD, with an unsaved job title change highlighted">
+          </div>
+          <figcaption>Synced from AD, so every field is labelled AD. The unsaved change stays amber until you save.</figcaption>
+        </figure>
+      </div>
+    </section>
+    <section class="feature flip" id="leavers" aria-labelledby="leavers-title">
+      <div class="wrap feature-grid">
+        <div class="feature-copy">
+          <p class="kicker">Starters and leavers</p>
+          <h2 id="leavers-title">A leaver in under a minute, without missing a step</h2>
+          <p>The jobs nobody enjoys and everybody gets wrong at the end of term, done the same way every time.</p>
+          <ul class="feature-points">
+            <li>Block sign-in, sign out of every device, reset the password and remove from groups</li>
+            <li>Remove licences so they're free for the next starter</li>
+            <li>Convert the mailbox to a shared mailbox so nothing is lost</li>
+            <li>New starters from one form, or a whole September intake from a spreadsheet</li>
+          </ul>
+          <p class="saves"><strong>Saves:</strong> about 25 minutes per leaver, and the step you'd have forgotten.</p>
+        </div>
+        <figure>
+          <div class="window">
+            <div class="window-bar" aria-hidden="true"><span></span><span></span><span></span><b>EntraPlus</b></div>
+            <img src="/assets/img/shots/after-leaver-1600.webp"
+                 srcset="/assets/img/shots/after-leaver-960.webp 960w, /assets/img/shots/after-leaver-1600.webp 1600w"
+                 sizes="(min-width: 960px) 680px, 94vw" width="1600" height="1006" loading="lazy" alt="The EntraPlus leaver window: block sign-in, sign out of all devices, reset password, remove from groups, remove licences and convert the mailbox, each with a tick">
+          </div>
+          <figcaption>Choose the steps, press Run. Each one is ticked off as it finishes.</figcaption>
+        </figure>
+      </div>
+    </section>
+    <section class="feature" id="groups" aria-labelledby="groups-title">
+      <div class="wrap feature-grid">
+        <div class="feature-copy">
+          <p class="kicker">Groups</p>
+          <h2 id="groups-title">Every kind of group, made properly</h2>
+          <p>Security groups, Microsoft 365 groups, distribution lists and dynamic groups, from one window that changes to match.</p>
+          <ul class="feature-points">
+            <li>Dynamic groups with a simple rule builder: everyone in the Science department, kept up to date automatically</li>
+            <li>Distribution lists with the right domain and external sender settings</li>
+            <li>Owners, members and settings in one place, whether the group lives in Entra, Exchange or AD</li>
+            <li>Only addresses that can actually be used are offered, so nothing fails halfway</li>
+          </ul>
+          <p class="saves"><strong>Saves:</strong> the hunt for which admin centre makes which kind of group.</p>
+        </div>
+        <figure>
+          <div class="window">
+            <div class="window-bar" aria-hidden="true"><span></span><span></span><span></span><b>EntraPlus</b></div>
+            <img src="/assets/img/shots/dark-group-create-1600.webp"
+                 srcset="/assets/img/shots/dark-group-create-960.webp 960w, /assets/img/shots/dark-group-create-1600.webp 1600w"
+                 sizes="(min-width: 960px) 680px, 94vw" width="1600" height="1006" loading="lazy" alt="Creating a dynamic security group in EntraPlus: members are everyone whose department is Science">
+          </div>
+          <figcaption>Pick the kind of group and the form changes to match. This one keeps itself up to date.</figcaption>
+        </figure>
+      </div>
+    </section>
+    <section class="feature flip" id="apps-policies" aria-labelledby="apps-policies-title">
+      <div class="wrap feature-grid">
+        <div class="feature-copy">
+          <p class="kicker">Applications and policies</p>
+          <h2 id="apps-policies-title">Spot the problem before the integration stops working</h2>
+          <p>Every app connected to your tenant, who publishes it, who can use it, and when its secrets expire. The most common reason a sync suddenly breaks.</p>
+          <ul class="feature-points">
+            <li>Secrets and certificates expiring in the next 30 days, in amber</li>
+            <li>Third-party apps, unverified publishers and what each app is allowed to do</li>
+            <li>Conditional Access policies explained in plain English, with safe templates</li>
+            <li>Switch sign-in off for an app in one click, with a confirmation</li>
+          </ul>
+          <p class="saves"><strong>Saves:</strong> the Monday morning when the MIS sync stopped and nobody knew why.</p>
+        </div>
+        <figure>
+          <div class="window">
+            <div class="window-bar" aria-hidden="true"><span></span><span></span><span></span><b>EntraPlus</b></div>
+            <img src="/assets/img/shots/dark-apps-1600.webp"
+                 srcset="/assets/img/shots/dark-apps-960.webp 960w, /assets/img/shots/dark-apps-1600.webp 1600w"
+                 sizes="(min-width: 960px) 680px, 94vw" width="1600" height="1006" loading="lazy" alt="EntraPlus applications: enterprise apps with their publisher and when their secrets expire, one expiring in 11 days and one already expired">
+          </div>
+          <figcaption>One secret expires in 11 days and another already has. Both are easy to miss in the Entra portal.</figcaption>
+        </figure>
+      </div>
+    </section>
+    <section class="feature" id="team" aria-labelledby="team-title">
+      <div class="wrap feature-grid">
+        <div class="feature-copy">
+          <p class="kicker">For the whole team</p>
+          <h2 id="team-title">Safe for your newest technician</h2>
+          <p>Give everyone the tools they need and nothing that could hurt on a bad day. You decide who gets what.</p>
+          <ul class="feature-points">
+            <li>Basic mode hides deleting, wiping and the leaver; advanced mode shows everything</li>
+            <li>Managers decide who's a senior technician from the EntraPlus website, so nobody can switch themselves up</li>
+            <li>Dangerous actions need the name typed to confirm</li>
+            <li>Every change goes in the activity log, with who did it and when</li>
+          </ul>
+          <p class="saves"><strong>Saves:</strong> the worry about what a new starter might delete.</p>
+        </div>
+        <figure>
+          <div class="window">
+            <div class="window-bar" aria-hidden="true"><span></span><span></span><span></span><b>EntraPlus</b></div>
+            <img src="/assets/img/shots/dark-settings-1600.webp"
+                 srcset="/assets/img/shots/dark-settings-960.webp 960w, /assets/img/shots/dark-settings-1600.webp 1600w"
+                 sizes="(min-width: 960px) 680px, 94vw" width="1600" height="1006" loading="lazy" alt="EntraPlus settings: the signed-in EntraPlus account, Microsoft 365, Exchange and Active Directory connections, and advanced mode">
+          </div>
+          <figcaption>Your organisation's Pro seat, your connections, and the mode for your role.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="feature-more" aria-labelledby="more-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="more-title">And the little things that add up</h2>
+        </div>
+        <ul class="more-grid">
+          <li><h3>Quick jobs</h3><p>Choose the jobs you do most and put them on your dashboard, in your order.</p></li>
+          <li><h3>Works with your sign-in</h3><p>Microsoft's own sign-in, with your MFA and Conditional Access. Nothing to store or manage.</p></li>
+          <li><h3>Your manager buys, you work</h3><p>Seats for the team are bought once on the website. Pro switches on when you sign in.</p></li>
+          <li><h3>Light, dark and more</h3><p>Follows Windows, or choose Retro or Claret if you're at the screen all day.</p></li>
+          <li><h3>No scroll-wheel accidents</h3><p>Drop-downs never change as you scroll past them, so a setting can't flip by mistake.</p></li>
+          <li><h3>Hybrid by design</h3><p>Every field knows whether it belongs to Entra, Exchange or AD, and saves it there.</p></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="band" aria-labelledby="cta-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="cta-title">Get your hours back</h2>
+          <p>EntraPlus is free to download and free to use for everyday jobs. Pro adds everything on this page from £10 per technician a month, billed yearly.</p>
+        </div>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="/#download">Download free for Windows</a>
+          <a class="btn" href="/#time">Work out your time saved</a>
+          <a class="btn" href="/#pricing">See pricing</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <a class="brand" href="/" aria-label="EntraPlus home"><img src="/favicon.svg" width="28" height="28" alt=""><span>EntraPlus</span></a>
+        <p class="aside">The interactive engineering toolkit for Active Directory and Microsoft Entra.</p>
+      </div>
+      <nav aria-label="Footer">
+        <ul>
+          <li><a href="/features.html">Features</a></li>
+          <li><a href="/#time">Time saved</a></li>
+          <li><a href="/#pricing">Pricing</a></li>
+          <li><a href="/login.html">Log in</a></li>
+          <li><a href="/privacy.html">Privacy and cookies</a></li>
+          <li><a href="mailto:hello@entraplus.co.uk">Contact</a></li>
+        </ul>
+      </nav>
+      <p class="legal">© <span id="year">2026</span> EntraPlus. EntraPlus is an independent product and is not affiliated with, endorsed by or sponsored by Microsoft. Microsoft, Microsoft 365, Microsoft Entra, Intune and Windows are trademarks of the Microsoft group of companies.</p>
+    </div>
+  </footer>
+
+  <div class="consent" id="consent" role="region" aria-label="Cookie choice" hidden>
+    <p>We'd like to use Google Analytics cookies to see which pages help people. Nothing loads unless you agree. <a href="/privacy.html">Privacy and cookies</a></p>
+    <div class="consent-actions">
+      <button type="button" class="btn btn-small" data-consent="denied">No thanks</button>
+      <button type="button" class="btn btn-primary btn-small" data-consent="granted">Allow analytics</button>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

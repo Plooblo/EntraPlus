@@ -16,6 +16,8 @@
      updateMember(orgId, userId, patch)    patch: { role?, status?, seat? }   (managers only)
      subscription(orgId)                   managers only
      invoices(orgId)                       managers only
+     invite(orgId, emails, role)           -> { results: [{ email, status, link }] }   managers only, own domains only
+     invites(orgId) / cancelInvite(id) / resendInvite(id)
      billingPortal(flow)                   -> { url } Stripe billing page for a manager ("manage" | "seats" | "cancel")
      createAppCode(challenge)              -> { code }   one-time code that signs the desktop app in
      appSessions()                         -> PCs where this person is signed in to the app
@@ -33,7 +35,9 @@
     try { return JSON.parse(localStorage.getItem(DB_KEY)) || null; } catch (e) { return null; }
   }
   function db() {
-    return load() || { users: {}, orgs: {}, members: [], subs: {}, invoices: {} };
+    var d = load() || { users: {}, orgs: {}, members: [], subs: {}, invoices: {} };
+    d.invites = d.invites || [];
+    return d;
   }
   function save(d) { localStorage.setItem(DB_KEY, JSON.stringify(d)); }
   function uid() { return "demo-" + Math.random().toString(36).slice(2, 10); }
@@ -110,8 +114,10 @@
       var d = db(), u = me(d), tenant = tenantOf(u.email), org = null;
       Object.keys(d.orgs).forEach(function (k) { if (d.orgs[k].tenant === tenant) org = d.orgs[k]; });
       if (!org || membership(d, u.id)) return Promise.resolve(null);
-      d.members.push({ org_id: org.id, user_id: u.id, email: u.email, name: u.name, role: "technician",
-                       status: "pending", seat: false, joined_at: new Date().toISOString() });
+      var inv = d.invites.filter(function (i) { return i.org_id === org.id && i.email === u.email.toLowerCase() && !i.accepted_at; })[0];
+      if (inv) inv.accepted_at = new Date().toISOString();
+      d.members.push({ org_id: org.id, user_id: u.id, email: u.email, name: u.name, role: inv ? inv.role : "technician",
+                       status: inv ? "active" : "pending", seat: false, joined_at: new Date().toISOString() });
       save(d);
       return Promise.resolve(org.name);
     },
@@ -150,6 +156,35 @@
       var d = db();
       try { managerCheck(d, orgId); } catch (e) { return fail(e.message); }
       return Promise.resolve((d.invoices[orgId] || []).slice().reverse());
+    },
+    invite: function (orgId, emails, role) {
+      var d = db();
+      try { managerCheck(d, orgId); } catch (e) { return fail(e.message); }
+      var domains = d.members.filter(function (m) { return m.org_id === orgId && m.status === "active"; })
+        .map(function (m) { return m.email.split("@")[1]; });
+      var list = String(emails).split(/[\s,;]+/).map(function (e) { return e.trim().toLowerCase(); }).filter(Boolean);
+      var results = list.map(function (email) {
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { email: email, status: "invalid" };
+        if (domains.indexOf(email.split("@")[1]) === -1) return { email: email, status: "wrong_domain" };
+        var m = d.members.filter(function (x) { return x.org_id === orgId && x.email === email && x.status !== "removed"; })[0];
+        if (m && m.status === "active") return { email: email, status: "already_member" };
+        if (m) { m.status = "active"; m.role = role; return { email: email, status: "approved" }; }
+        d.invites = d.invites.filter(function (i) { return !(i.org_id === orgId && i.email === email && !i.accepted_at); });
+        d.invites.push({ id: uid(), org_id: orgId, email: email, role: role, created_at: new Date().toISOString(), emailed: false });
+        return { email: email, status: "link", link: location.origin + "/register.html?invite=1&email=" + encodeURIComponent(email) };
+      });
+      save(d);
+      return Promise.resolve({ results: results, domains: domains });
+    },
+    invites: function (orgId) {
+      return Promise.resolve(db().invites.filter(function (i) { return i.org_id === orgId && !i.accepted_at; }));
+    },
+    cancelInvite: function (id) {
+      var d = db(); d.invites = d.invites.filter(function (i) { return i.id !== id; }); save(d); return Promise.resolve();
+    },
+    resendInvite: function (id) {
+      var i = db().invites.filter(function (x) { return x.id === id; })[0];
+      return Promise.resolve({ results: [{ email: i.email, status: "link", link: location.origin + "/register.html?invite=1&email=" + encodeURIComponent(i.email) }] });
     },
     billingPortal: function (orgId, flow) {
       var d = db(), sub = d.subs[orgId];
@@ -279,6 +314,21 @@
     },
     endAppSession: function (id) {
       return sb().then(function (c) { return c.rpc("end_app_session", { session_id: id }); }).then(check);
+    },
+    invite: function (_orgId, emails, role) {
+      return sb().then(function (c) { return c.functions.invoke("invite", { body: { emails: emails, role: role } }); }).then(unwrap);
+    },
+    invites: function (orgId) {
+      return sb().then(function (c) {
+        return c.from("invites").select("id, email, role, created_at, expires_at, emailed").eq("org_id", orgId)
+          .is("accepted_at", null).order("created_at", { ascending: false });
+      }).then(check);
+    },
+    cancelInvite: function (id) {
+      return sb().then(function (c) { return c.from("invites").delete().eq("id", id); }).then(check);
+    },
+    resendInvite: function (id) {
+      return sb().then(function (c) { return c.functions.invoke("invite", { body: { resend: id } }); }).then(unwrap);
     },
     billingPortal: function (_orgId, flow) {
       return sb().then(function (c) {

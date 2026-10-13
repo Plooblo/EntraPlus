@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>EntraPlus: Active Directory and Microsoft Entra admin toolkit for schools</title>
-  <meta name="description" content="Create starters, run leavers, find BitLocker keys and manage Intune, groups and Conditional Access from one Windows app. See the exact Graph call behind every action. Free to download.">
+  <meta name="description" content="Starters, leavers, BitLocker keys, locked-out accounts, licences and Intune devices from one Windows app built for school IT teams. Get hours back every week. Free to download.">
   <link rel="canonical" href="https://entraplus.co.uk/">
   <meta name="theme-color" content="#0D1824" media="(prefers-color-scheme: dark)">
   <meta name="theme-color" content="#F4F7F9" media="(prefers-color-scheme: light)">
@@ -14,7 +14,7 @@
   <meta property="og:site_name" content="EntraPlus">
   <meta property="og:url" content="https://entraplus.co.uk/">
   <meta property="og:title" content="EntraPlus: the interactive toolkit for Active Directory and Microsoft Entra">
-  <meta property="og:description" content="Starters, leavers, devices, groups and Conditional Access in one Windows app, with the exact Graph call behind every action.">
+  <meta property="og:description" content="Starters, leavers, devices, groups and Active Directory in one calm Windows app. The jobs that eat your week, done in a click or two.">
   <meta property="og:image" content="https://entraplus.co.uk/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -112,8 +112,8 @@
         <span>EntraPlus</span>
       </a>
       <nav class="site-nav" id="site-nav" aria-label="Main">
-        <a href="#compare">Before and after</a>
-        <a href="#toolkit">Toolkit</a>
+        <a href="/features.html">Features</a>
+        <a href="#time">Time saved</a>
         <a href="#pricing">Pricing</a>
         <a href="#faq">Questions</a>
         <a href="/login.html" class="nav-login">Log in</a>
@@ -137,7 +137,7 @@
       <div class="wrap hero-grid">
         <div class="hero-copy">
           <h1 id="hero-title">The interactive engineering toolkit for Active&nbsp;Directory and Microsoft&nbsp;Entra.</h1>
-          <p class="lede">Create starters, run leavers, find BitLocker keys and tidy Conditional Access from one Windows app, and see the exact Graph call behind every button.</p>
+          <p class="lede">Starters, leavers, BitLocker keys, locked-out accounts and licences from one calm Windows app. The jobs that take ten minutes across four admin centres take a click or two.</p>
           <div class="cta-row">
             <a class="btn btn-primary" href="#download">Download free for Windows</a>
             <a class="btn" href="#pricing">See what Pro adds</a>
@@ -158,7 +158,7 @@
             <input id="hero-q" type="search" autocomplete="off" spellcheck="false" placeholder="Try leaver, bitlocker or password" aria-controls="hero-results" aria-describedby="hero-hint">
           </div>
           <ul id="hero-results" class="console-results" aria-live="polite"></ul>
-          <p id="hero-hint" class="console-hint">Choose a result to see its safety checks and the exact API call.</p>
+          <p id="hero-hint" class="console-hint">Choose a result to see how EntraPlus does it.</p>
         </div>
       </div>
 
@@ -169,9 +169,9 @@
             <img src="/assets/img/shots/dark-users-1600.webp"
                  srcset="/assets/img/shots/dark-users-960.webp 960w, /assets/img/shots/dark-users-1600.webp 1600w"
                  sizes="(min-width: 1240px) 1160px, 94vw" width="1600" height="1006" fetchpriority="high"
-                 alt="EntraPlus user screen: Jane Smith's details with live status badges, account actions and an unsaved job title change highlighted">
+                 alt="EntraPlus user screen: Jane Smith, synced from Active Directory, with live status badges, account actions and an unsaved job title change highlighted">
           </div>
-          <figcaption>Every field shows where it's saved: Entra, Exchange or Active Directory. Changes stay highlighted until you save them.</figcaption>
+          <figcaption>One screen for every account, whether it lives in Microsoft 365, Exchange or Active Directory. Changes stay highlighted until you save them.</figcaption>
         </figure>
       </div>
     </section>
@@ -211,73 +211,72 @@
       </div>
     </section>
 
-    <!-- Toolkit explorer: search, filters, interactive table, sticky sidebar -->
-    <section id="toolkit" aria-labelledby="toolkit-title">
+    <!-- Time back: the jobs that eat the week, and what EntraPlus gives back -->
+    <section id="time" aria-labelledby="time-title">
       <div class="wrap">
         <div class="section-head">
-          <h2 id="toolkit-title">Every action, and exactly how it's done</h2>
-          <p>Nothing hidden. Each action lists the Microsoft Graph or PowerShell call behind it, how risky it is, and the safety check EntraPlus adds. Open a row to copy the command.</p>
+          <h2 id="time-title">Hours back, every week</h2>
+          <p>The jobs that come round every week in a school IT office, done in a click or two instead of a tour of admin centres.</p>
         </div>
+        <ul class="time-cards">
+          <li class="time-card">
+            <h3>A member of staff leaves</h3>
+            <p class="before"><span>Before</span>Four admin centres and a checklist. About 25 minutes, and it's easy to miss a step.</p>
+            <p class="after"><span>With EntraPlus</span>One window. Under a minute.</p>
+            <p class="detail">Sign-in blocked, signed out everywhere, licences and groups removed, mailbox shared, every step confirmed.</p>
+          </li>
+          <li class="time-card">
+            <h3>Someone's locked out</h3>
+            <p class="before"><span>Before</span>Remote into a server, open AD Users and Computers, find them. About 4 minutes.</p>
+            <p class="after"><span>With EntraPlus</span>Seen on your dashboard. Unlocked in 10 seconds.</p>
+            <p class="detail">Locked-out accounts appear before the phone rings, and a quick job unlocks them.</p>
+          </li>
+          <li class="time-card">
+            <h3>"I'm on the BitLocker screen"</h3>
+            <p class="before"><span>Before</span>Intune, then the device, then recovery keys, then match the ID. About 5 minutes.</p>
+            <p class="after"><span>With EntraPlus</span>Type the name, read out the key. 10 seconds.</p>
+            <p class="detail">Works for keys saved in Entra or Active Directory, and LAPS passwords too.</p>
+          </li>
+          <li class="time-card">
+            <h3>A new starter on Monday</h3>
+            <p class="before"><span>Before</span>Account, licence, groups, mailbox, password. About 12 minutes, and a typo means starting again.</p>
+            <p class="after"><span>With EntraPlus</span>One form. Two minutes.</p>
+            <p class="detail">The sign-in name builds itself, the licence shows how many are left, and the password is ready to copy.</p>
+          </li>
+          <li class="time-card">
+            <h3>Move a classroom of PCs</h3>
+            <p class="before"><span>Before</span>Find each computer, open it, move it, repeat. About 15 minutes for a classroom.</p>
+            <p class="after"><span>With EntraPlus</span>Select them all, drag onto the OU. 20 seconds.</p>
+            <p class="detail">Filters find them first: not seen for 90 days, Windows 10, no description, or your own.</p>
+          </li>
+          <li class="time-card">
+            <h3>Licences quietly run out</h3>
+            <p class="before"><span>Before</span>You find out when a new starter can't get Office.</p>
+            <p class="after"><span>With EntraPlus</span>Amber on your dashboard while there's still time to order.</p>
+            <p class="detail">Only the licences you pay for, with how many are left, staff A1, A3 and A5 first.</p>
+          </li>
+        </ul>
 
-        <div class="explorer">
-          <nav class="explorer-side" aria-label="Toolkit areas">
-            <ul id="tk-areas"></ul>
-            <div class="legend" aria-label="Risk levels">
-              <p class="legend-title">Risk</p>
-              <p><span class="risk" data-r="low"><i></i>Low</span> Easy to undo</p>
-              <p><span class="risk" data-r="medium"><i></i>Medium</span> Affects the person</p>
-              <p><span class="risk" data-r="high"><i></i>High</span> Hard to undo</p>
+        <div class="calc" id="calc">
+          <div class="calc-inputs">
+            <h3>What's that worth to your team?</h3>
+            <div class="calc-row"><label for="c-techs">Technicians</label><input type="range" id="c-techs" name="techs" min="1" max="15" value="3"><output for="c-techs">3</output></div>
+            <div class="calc-row"><label for="c-changes">Starters and leavers a month</label><input type="range" id="c-changes" name="changes" min="0" max="60" value="8"><output for="c-changes">8</output></div>
+            <div class="calc-row"><label for="c-everyday">Password resets and unlocks a week</label><input type="range" id="c-everyday" name="everyday" min="0" max="100" value="20"><output for="c-everyday">20</output></div>
+            <div class="calc-row"><label for="c-lookups">BitLocker and LAPS lookups a week</label><input type="range" id="c-lookups" name="lookups" min="0" max="40" value="5"><output for="c-lookups">5</output></div>
+            <div class="calc-row"><label for="c-admin">Group, OU and device changes a week</label><input type="range" id="c-admin" name="admin" min="0" max="80" value="15"><output for="c-admin">15</output></div>
+            <div class="calc-row"><label for="c-rate">Cost of a technician's hour</label><input type="range" id="c-rate" name="rate" min="12" max="60" value="22"><output for="c-rate">£22</output></div>
+          </div>
+          <div class="calc-result" aria-live="polite">
+            <p class="calc-big"><strong id="calc-hours">146</strong> hours back a year</p>
+            <p class="calc-sub">That's about <strong id="calc-days">19</strong> working days, worth <strong id="calc-value">£3,212</strong> of your team's time.</p>
+            <p class="calc-sub">EntraPlus Pro for <span id="calc-techs">3 technicians</span>: <strong id="calc-cost">£360</strong> a year.</p>
+            <p class="calc-payback">Pays for itself in <strong id="calc-payback">41 days</strong></p>
+            <div class="cta-row">
+              <a class="btn btn-primary" href="#download">Download free</a>
+              <a class="btn" href="/features.html">See every feature</a>
             </div>
-          </nav>
-
-          <div class="explorer-main">
-            <div class="explorer-tools">
-              <div class="field-search">
-                <label for="tk-q" class="sr-only">Search actions</label>
-                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
-                <input id="tk-q" type="search" placeholder="Search actions, endpoints or cmdlets" autocomplete="off" spellcheck="false">
-              </div>
-              <div class="filters">
-                <div class="filter-group" role="group" aria-label="Plan">
-                  <button type="button" class="chip" data-filter="plan" data-value="Free" aria-pressed="false">Free</button>
-                  <button type="button" class="chip" data-filter="plan" data-value="Pro" aria-pressed="false">Pro</button>
-                </div>
-                <div class="filter-group" role="group" aria-label="Risk">
-                  <button type="button" class="chip" data-filter="risk" data-value="low" aria-pressed="false">Low risk</button>
-                  <button type="button" class="chip" data-filter="risk" data-value="medium" aria-pressed="false">Medium</button>
-                  <button type="button" class="chip" data-filter="risk" data-value="high" aria-pressed="false">High</button>
-                </div>
-                <div class="filter-group" role="group" aria-label="Method">
-                  <button type="button" class="chip" data-filter="method" data-value="GET" aria-pressed="false">GET</button>
-                  <button type="button" class="chip" data-filter="method" data-value="POST" aria-pressed="false">POST</button>
-                  <button type="button" class="chip" data-filter="method" data-value="PATCH" aria-pressed="false">PATCH</button>
-                  <button type="button" class="chip" data-filter="method" data-value="DELETE" aria-pressed="false">DELETE</button>
-                  <button type="button" class="chip" data-filter="method" data-value="PS" aria-pressed="false">PowerShell</button>
-                </div>
-              </div>
-              <p class="tk-count" id="tk-count" aria-live="polite"></p>
-            </div>
-
-            <div class="table-wrap">
-              <table class="tk">
-                <caption class="sr-only">EntraPlus actions with platform, API call, risk and plan. Open a row for details.</caption>
-                <thead>
-                  <tr>
-                    <th scope="col"><button type="button" class="sort" data-sort="title">Action</button></th>
-                    <th scope="col">Where</th>
-                    <th scope="col">Call</th>
-                    <th scope="col"><button type="button" class="sort" data-sort="risk">Risk</button></th>
-                    <th scope="col"><button type="button" class="sort" data-sort="plan">Plan</button></th>
-                  </tr>
-                </thead>
-                <tbody id="tk-body"></tbody>
-              </table>
-              <noscript><p class="tk-empty">Turn on JavaScript to explore the toolkit.</p></noscript>
-              <div class="tk-empty" id="tk-empty" hidden>
-                <p>No actions match those filters.</p>
-                <button type="button" class="btn btn-small" id="tk-clear">Clear search and filters</button>
-              </div>
-            </div>
+            <p class="hint">Estimates from the steps each job takes by hand. Move the sliders to match your school.</p>
           </div>
         </div>
       </div>
@@ -306,14 +305,15 @@
       <div class="wrap">
         <div class="section-head">
           <h2 id="screens-title">A look around</h2>
-          <p>Light or dark, following your Windows setting.</p>
+          <p>Light or dark, following your Windows setting. <a href="/features.html">See every feature in detail</a>.</p>
         </div>
         <div class="tabs" role="tablist" aria-label="Choose a screen">
-          <button role="tab" id="shot-tab-dashboard" aria-selected="true" aria-controls="shot-panel" data-shot="dark-dashboard" data-alt="Dashboard with user, device and compliance counts, licence usage bars and common jobs">Dashboard</button>
-          <button role="tab" id="shot-tab-devices" aria-selected="false" aria-controls="shot-panel" data-shot="dark-devices" data-alt="Devices screen listing Intune laptops and iPads with compliance, last check-in, and actions for the selected device" tabindex="-1">Devices</button>
-          <button role="tab" id="shot-tab-policies" aria-selected="false" aria-controls="shot-panel" data-shot="dark-policies" data-alt="Conditional Access policies with their state and a plain-English summary of the selected policy" tabindex="-1">Policies</button>
-          <button role="tab" id="shot-tab-groups" aria-selected="false" aria-controls="shot-panel" data-shot="light-groups" data-alt="Groups screen in light mode showing a Microsoft 365 group and its members" tabindex="-1">Groups</button>
-          <button role="tab" id="shot-tab-users" aria-selected="false" aria-controls="shot-panel" data-shot="light-users" data-alt="User screen in light mode" tabindex="-1">Users</button>
+          <button role="tab" id="shot-tab-dashboard" aria-selected="true" aria-controls="shot-panel" data-shot="dark-dashboard" data-alt="Dashboard: user and device counts, licences running low, accounts locked out in Active Directory, and quick jobs">Dashboard</button>
+          <button role="tab" id="shot-tab-filters" aria-selected="false" aria-controls="shot-panel" data-shot="dark-filter" data-alt="Building a custom filter: Science staff who haven't signed in for 60 days, saved to use again" tabindex="-1">Filters</button>
+          <button role="tab" id="shot-tab-ad" aria-selected="false" aria-controls="shot-panel" data-shot="dark-ad-computers" data-alt="Active Directory computers filtered to those not seen for 90 days, with the OU tree and actions for the selected computer" tabindex="-1">Active Directory</button>
+          <button role="tab" id="shot-tab-devices" aria-selected="false" aria-controls="shot-panel" data-shot="dark-devices" data-alt="Intune devices filtered to those that aren't compliant, with details and actions for the selected laptop" tabindex="-1">Devices</button>
+          <button role="tab" id="shot-tab-apps" aria-selected="false" aria-controls="shot-panel" data-shot="dark-apps" data-alt="Applications: every enterprise app with who publishes it and when its secrets expire, one expiring in 11 days" tabindex="-1">Applications</button>
+          <button role="tab" id="shot-tab-light" aria-selected="false" aria-controls="shot-panel" data-shot="light-dashboard" data-alt="The dashboard in light mode" tabindex="-1">Light mode</button>
         </div>
         <div id="shot-panel" role="tabpanel" aria-labelledby="shot-tab-dashboard" tabindex="0">
           <div class="window">
@@ -321,7 +321,7 @@
             <img id="shot-img" src="/assets/img/shots/dark-dashboard-1600.webp"
                  srcset="/assets/img/shots/dark-dashboard-960.webp 960w, /assets/img/shots/dark-dashboard-1600.webp 1600w"
                  sizes="(min-width: 1240px) 1160px, 94vw" width="1600" height="1006" loading="lazy"
-                 alt="Dashboard with user, device and compliance counts, licence usage bars and common jobs">
+                 alt="Dashboard: user and device counts, licences running low, accounts locked out in Active Directory, and quick jobs">
           </div>
         </div>
       </div>
@@ -335,7 +335,7 @@
           <p>EntraPlus is growing from a management app into a full engineering toolkit. Pro subscribers get each of these as it lands.</p>
         </div>
         <ul class="cards">
-          <li class="card"><span class="badge badge-next">Next up</span><h3>Script export</h3><p>Turn any action into a PowerShell or Graph script you can review, save and run yourself.</p></li>
+          <li class="card"><span class="badge badge-next">Next up</span><h3>Scheduled reports</h3><p>Stale computers, locked-out staff or licences running low, emailed to you every Monday morning.</p></li>
           <li class="card"><span class="badge badge-next">Next up</span><h3>Onboarding and offboarding templates</h3><p>Save a role once, such as Teacher or Sixth Form, with its groups, licence and OU, then apply it in one click.</p></li>
           <li class="card"><span class="badge">Planned</span><h3>Permission analysis</h3><p>See who holds which admin roles, and where someone has more access than their job needs.</p></li>
           <li class="card"><span class="badge">Planned</span><h3>Change impact preview</h3><p>Before you save, see which groups, licences, policies and devices the change will touch.</p></li>
@@ -488,7 +488,8 @@
       </div>
       <nav aria-label="Footer">
         <ul>
-          <li><a href="#toolkit">Toolkit</a></li>
+          <li><a href="/features.html">Features</a></li>
+          <li><a href="#time">Time saved</a></li>
           <li><a href="#pricing">Pricing</a></li>
           <li><a href="/login.html">Log in</a></li>
           <li><a href="/privacy.html">Privacy and cookies</a></li>

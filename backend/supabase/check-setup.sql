@@ -1,5 +1,5 @@
 -- EntraPlus: where is the database setup up to? Run in Supabase > SQL Editor. Changes nothing.
-with t(name) as (values ('organisations'), ('members'), ('subscriptions'), ('invoices'), ('app_codes'), ('app_sessions'), ('admin_audit'))
+with t(name) as (values ('organisations'), ('members'), ('subscriptions'), ('invoices'), ('app_codes'), ('app_sessions'), ('admin_audit'), ('invites'))
 select 1 as ord, 'Table ' || t.name as check,
   case when c.oid is null then '!! missing: run schema.sql'
        when not c.relrowsecurity then '!! row level security is OFF'
@@ -8,11 +8,11 @@ select 1 as ord, 'Table ' || t.name as check,
        else 'OK' end as result
 from t left join pg_class c on c.relname = t.name and c.relnamespace = 'public'::regnamespace
 union all
-select 2, 'Function ' || f, case when to_regprocedure('public.' || f) is null then '!! missing: run update-admin.sql'
+select 2, 'Function ' || f, case when to_regprocedure('public.' || f) is null then '!! missing: run update-admin.sql and update-invites.sql'
   when not has_function_privilege('service_role', 'public.' || f, 'EXECUTE') then '!! server role blocked: run fix-permissions.sql'
   else 'OK' end
 from unnest(array['account_state()', 'create_organisation(text)', 'join_organisation()', 'fit_seats(uuid)',
-                  'end_app_session(uuid)', 'prune_app_auth()', 'licence_active(uuid)']) f
+                  'end_app_session(uuid)', 'prune_app_auth()', 'licence_active(uuid)', 'org_domains(uuid)']) f
 union all
 select 3, 'Latest sign-in: ' || u.email,
   coalesce('tenant ' || coalesce(u.raw_user_meta_data -> 'custom_claims' ->> 'tid',

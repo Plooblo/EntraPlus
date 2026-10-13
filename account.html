@@ -132,6 +132,24 @@
           <p class="hint">Colleagues join by signing in at entraplus.co.uk with their Microsoft work account; they appear here
             to approve. Managers handle billing and people. Senior technicians can use advanced mode in the app;
             technicians use basic mode.</p>
+          <form class="invite-form" id="invite-form" novalidate>
+            <div class="field invite-emails">
+              <label for="invite-emails">Invite people</label>
+              <input id="invite-emails" name="emails" type="text" autocomplete="off" spellcheck="false"
+                     placeholder="name@yourschool.org, another@yourschool.org" aria-describedby="invite-hint">
+            </div>
+            <div class="field">
+              <label for="invite-role">As</label>
+              <select id="invite-role" name="role">
+                <option value="technician">Technician</option>
+                <option value="senior">Senior technician</option>
+                <option value="manager">Manager</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Send invites</button>
+            <p class="hint invite-hint" id="invite-hint"></p>
+            <div class="invite-result" id="invite-result" role="status" aria-live="polite" hidden></div>
+          </form>
           <div class="table-wrap">
             <table class="people">
               <caption class="sr-only">People in your organisation, their role and whether they have a Pro seat</caption>
@@ -139,6 +157,11 @@
               <tbody id="people-body"></tbody>
             </table>
           </div>
+        </section>
+
+        <section class="panel manager-only" id="invites-panel" aria-labelledby="invites-title" hidden>
+          <h2 id="invites-title">Invites waiting</h2>
+          <ul class="pcs" id="invite-list"></ul>
         </section>
 
         <section class="panel manager-only" aria-labelledby="history-title" hidden>

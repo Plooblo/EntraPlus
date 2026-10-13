@@ -172,6 +172,30 @@ If something doesn't update:
 3. Add a live webhook endpoint, then set the live `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` secrets.
 4. Put the live links in `config.js`.
 
+## Invites
+
+Managers can invite colleagues from **People** on their dashboard. An invite skips "waiting for approval" and sets the
+person's role, but it never lets an outsider in:
+
+- **Domain rule:** only addresses at the organisation's own email domains are accepted. These are the domains its
+  active members signed in with through Microsoft. Anything else is refused.
+- **Tenant rule:** joining still needs a Microsoft sign-in from the organisation's tenant, so a forwarded invite is
+  useless to anyone else.
+- **Already waiting:** inviting someone who's already waiting simply approves them.
+- **Expiry:** invites last 30 days, and managers can resend or cancel them.
+
+**Set up:**
+1. Run `supabase/update-invites.sql`. It's already in `schema.sql` for new installs.
+2. Deploy the function: `supabase functions deploy invite`
+3. **Optional, to send real emails:**
+   1. Sign up at resend.com (it has a free tier).
+   2. Add and verify `entraplus.co.uk` as a sending domain. Resend gives you DNS records to add.
+   3. Create an API key, then add these Supabase secrets:
+      - `RESEND_API_KEY`: the key
+      - `INVITE_FROM`: `EntraPlus <invites@entraplus.co.uk>`
+
+   Until then, managers get a **Copy invite link** button to send the link themselves.
+
 ## The desktop app's sign-in
 
 The app's **Sign in** button (in the sidebar, and under Settings > Your EntraPlus account) works like this:

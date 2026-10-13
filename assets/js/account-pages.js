@@ -39,6 +39,14 @@
       $("#plan-note").hidden = false;
     }
     if (auth.mode === "demo") $("#demo-signin").hidden = false;
+    if (page === "register" && params.get("invite") && $("#plan-note")) {
+      var invOrg = params.get("org"), invEmail = params.get("email") || "";
+      $("#plan-note").textContent = "You've been invited to join " + (invOrg || "your organisation") + " on EntraPlus. " +
+        "Continue with your " + (invEmail.split("@")[1] || "work") + " Microsoft account" +
+        (invEmail ? " (" + invEmail + ")" : "") + " and you'll be straight in.";
+      $("#plan-note").hidden = false;
+      if (auth.mode === "demo" && invEmail) $("#demo-email").value = invEmail;
+    }
     auth.currentUser().then(function (u) { if (u) location.replace("/account.html"); });
     var btn = $("#ms-signin"), err = $("#signin-form .form-error");
     btn.addEventListener("click", function () {
@@ -128,6 +136,7 @@
     if (isManager) {
       loadSubscription();
       loadPeople();
+      loadInvites();
       loadHistory();
       if (auth.mode === "demo") demoTools();
     }
@@ -252,6 +261,7 @@
   /* ---------------- manager: people */
   function loadPeople() {
     auth.members(state.org.id).then(function (rows) {
+      inviteHint(rows);
       var seats = subInfo && subInfo.status === "active" ? subInfo.seats : 0;
       var used = rows.filter(function (r) { return r.seat && r.status === "active"; }).length;
       $("#seat-count").textContent = used + " of " + seats + " Pro seat" + (seats === 1 ? "" : "s") + " in use";
@@ -300,6 +310,85 @@
     }
     if (act === "remove" && confirm("Remove " + name + " from your organisation? Their Pro seat becomes free.")) {
       changeMember(id, { status: "removed" }, name + " removed");
+    }
+  });
+
+  /* ---------------- manager: invites */
+  var ROLE_WORDS = { manager: "Manager", senior: "Senior technician", technician: "Technician" };
+  var lastLinks = {};
+
+  function inviteHint(rows) {
+    var domains = [];
+    rows.forEach(function (r) {
+      var d = (r.email || "").split("@")[1];
+      if (r.status === "active" && d && domains.indexOf(d) === -1) domains.push(d);
+    });
+    $("#invite-hint").textContent = domains.length
+      ? "Only addresses at " + domains.map(function (d) { return "@" + d; }).join(" or ") + " can be invited. " +
+        "They join as soon as they sign in with that Microsoft account; nobody outside your organisation can use an invite."
+      : "";
+  }
+
+  function loadInvites() {
+    auth.invites(state.org.id).then(function (rows) {
+      $("#invites-panel").hidden = !rows.length;
+      $("#invite-list").innerHTML = rows.map(function (i) {
+        return '<li><span><strong>' + esc(i.email) + '</strong><br><span class="hint">' + esc(ROLE_WORDS[i.role] || i.role) +
+          " · invited " + esc(fmtDate(i.created_at)) + (i.emailed ? " · email sent" : " · not emailed yet") + '</span></span>' +
+          '<span class="row-actions"><button type="button" class="btn btn-small" data-inv="resend" data-id="' + esc(i.id) + '">' +
+          (i.emailed ? "Resend" : "Copy link") + '</button> <button type="button" class="btn btn-small" data-inv="cancel" data-id="' +
+          esc(i.id) + '" aria-label="Cancel the invite for ' + esc(i.email) + '">Cancel</button></span></li>';
+      }).join("");
+    }).catch(function () { $("#invites-panel").hidden = true; });
+  }
+
+  function copy(text) {
+    return navigator.clipboard.writeText(text).then(function () { return true; }, function () { return false; });
+  }
+
+  $("#invite-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var box = $("#invite-result"), emails = $("#invite-emails").value.trim();
+    if (!emails) { $("#invite-emails").focus(); return; }
+    var btn = e.target.querySelector("button[type=submit]");
+    btn.disabled = true;
+    auth.invite(state.org.id, emails, $("#invite-role").value).then(function (r) {
+      btn.disabled = false;
+      var words = { sent: "Invite emailed", link: "Invite ready: send them the link", approved: "Was waiting: now approved",
+                    already_member: "Already in your organisation", wrong_domain: "Not at your organisation's domain",
+                    invalid: "Not a valid email address", error: "Couldn't invite" };
+      var links = r.results.filter(function (x) { return x.link && x.status === "link"; });
+      box.innerHTML = '<ul class="invite-outcomes">' + r.results.map(function (x) {
+        var good = x.status === "sent" || x.status === "link" || x.status === "approved";
+        return '<li class="' + (good ? "ok" : "no") + '"><strong>' + esc(x.email) + "</strong>: " + esc(words[x.status] || x.status) + "</li>";
+      }).join("") + "</ul>" + (links.length ? '<button type="button" class="btn btn-small" id="copy-links">Copy invite link' +
+        (links.length > 1 ? "s" : "") + "</button>" : "");
+      box.hidden = false;
+      lastLinks = links.map(function (x) { return x.email + ": " + x.link; }).join("\n");
+      if (r.results.some(function (x) { return x.status === "sent" || x.status === "link" || x.status === "approved"; })) {
+        $("#invite-emails").value = "";
+      }
+      loadInvites();
+      loadPeople();
+    }).catch(function (err) { btn.disabled = false; fail(err); });
+  });
+
+  $("#invite-result").addEventListener("click", function (e) {
+    if (e.target.id === "copy-links") copy(lastLinks).then(function (ok) { toast(ok ? "Invite links copied" : "Couldn't copy"); });
+  });
+
+  $("#invite-list").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-inv]");
+    if (!b) return;
+    var id = b.getAttribute("data-id");
+    if (b.getAttribute("data-inv") === "cancel") {
+      auth.cancelInvite(id).then(function () { toast("Invite cancelled"); loadInvites(); }, fail);
+    } else {
+      auth.resendInvite(id).then(function (r) {
+        var x = r.results[0];
+        if (x.status === "sent") { toast("Invite emailed again"); loadInvites(); }
+        else copy(x.link).then(function (ok) { toast(ok ? "Invite link copied: send it to " + x.email : x.link); });
+      }, fail);
     }
   });
 

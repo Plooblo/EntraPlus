@@ -130,7 +130,7 @@
     });
   }
 
-  /* ---------- search shared by the hero and the explorer ---------- */
+  /* ---------- search for the hero ---------- */
   var SYNONYMS = {
     offboard: "leaver", offboarding: "leaver", onboard: "starter", onboarding: "starter", joiner: "starter",
     mfa: "policy", "conditional": "policy", recovery: "bitlocker", laptop: "device", ipad: "device",
@@ -141,8 +141,7 @@
     return q.toLowerCase().split(/\s+/).filter(Boolean).map(function (t) { return SYNONYMS[t] || t; });
   }
   function haystack(item) {
-    return (item.title + " " + item.summary + " " + item.area + " " + item.platform + " " + item.method + " " +
-            item.call + " " + item.ps + " " + item.http).toLowerCase();
+    return (item.title + " " + item.summary + " " + item.area).toLowerCase();
   }
   TOOLKIT.forEach(function (item) { item._hay = haystack(item); item._title = item.title.toLowerCase(); });
   function score(item, toks) {
@@ -173,9 +172,8 @@
     return html;
   }
   function metaHTML(it) {
-    return '<span class="mbadge" data-m="' + it.method + '">' + it.method + "</span>" +
-      "<code>" + esc(it.call) + "</code>" +
-      '<span class="risk" data-r="' + it.risk + '"><i></i>' + cap(it.risk) + "</span>" +
+    return '<span class="r-area">' + esc(it.area === "Hybrid AD" ? "Active Directory" : it.area) + "</span>" +
+      '<span class="r-saves">Saves about ' + it.mins + " min</span>" +
       '<span class="plan-badge" data-plan="' + it.plan + '">' + it.plan + "</span>";
   }
   function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
@@ -226,7 +224,7 @@
   var JOBS = {
     starter: {
       img: "after-starter",
-      alt: "EntraPlus new starter form: first name, surname, generated username, domain picker, job title, licence with free count, and a ready-to-copy temporary password",
+      alt: "EntraPlus new starter form for Priya Shah: names, a username built for you, domain, job title, department, the staff licence, and a temporary password ready to copy",
       before: "One module to install, 14 lines to get right, and one typo in the sign-in name means starting again.",
       after: "One form. The sign-in name is built for you, the licence shows how many are left, and the password is ready to copy.",
       code: [
@@ -248,7 +246,7 @@
     },
     leaver: {
       img: "after-leaver",
-      alt: "EntraPlus leaver window for Jane Smith listing each step with a green tick: mailbox converted to shared, sign-in blocked, signed out everywhere, password reset, removed from groups, licences removed",
+      alt: "The EntraPlus leaver window for Jane Smith: block sign-in, sign out of all devices, reset the password, remove from groups and licences, and convert the mailbox",
       before: "Two modules, two sign-ins, and a loop that stops at the first group it can't change.",
       after: "Tick the steps and run them. Each one reports its own result, and the mailbox is converted before the licence is removed.",
       code: [
@@ -270,7 +268,7 @@
     },
     bitlocker: {
       img: "after-bitlocker",
-      alt: "EntraPlus BitLocker recovery key window showing the key ID and the 48-digit recovery key with a copy button",
+      alt: "EntraPlus showing a laptop\'s BitLocker recovery key with its key ID and a Copy button, over the list of devices that aren\'t compliant",
       before: "A teacher waiting at the recovery screen while you look up the right module, filter and property.",
       after: "Pick the laptop and press BitLocker key. Match the key ID, read it out, done.",
       code: [
@@ -331,145 +329,39 @@
     }
   }
 
-  /* ---------- toolkit explorer ---------- */
-  var body = $("#tk-body");
-  var state = { q: "", area: "All", plan: [], risk: [], method: [], sort: null, dir: 1, open: {} };
-  var RISK_ORDER = { low: 0, medium: 1, high: 2 };
-  var AREAS = ["All", "Users", "Groups", "Devices", "Policies", "Hybrid AD", "Exchange"];
-
-  function renderAreas() {
-    var list = $("#tk-areas");
-    if (!list) return;
-    list.innerHTML = AREAS.map(function (a) {
-      var n = a === "All" ? TOOLKIT.length : TOOLKIT.filter(function (i) { return i.area === a; }).length;
-      return '<li><button type="button" data-area="' + a + '"' + (state.area === a ? ' aria-current="true"' : "") +
-        ">" + a + '<span class="n">' + n + "</span></button></li>";
-    }).join("");
-  }
-  function filtered() {
-    var items = state.q.trim() ? search(state.q) : TOOLKIT.slice();
-    items = items.filter(function (i) {
-      return (state.area === "All" || i.area === state.area) &&
-        (!state.plan.length || state.plan.indexOf(i.plan) !== -1) &&
-        (!state.risk.length || state.risk.indexOf(i.risk) !== -1) &&
-        (!state.method.length || state.method.indexOf(i.method) !== -1);
-    });
-    if (state.sort) {
-      items.sort(function (a, b) {
-        var x = state.sort === "risk" ? RISK_ORDER[a.risk] : a[state.sort];
-        var y = state.sort === "risk" ? RISK_ORDER[b.risk] : b[state.sort];
-        return (x > y ? 1 : x < y ? -1 : 0) * state.dir;
-      });
-    }
-    return items;
-  }
-  function detailHTML(it) {
-    var notGraph = it.method === "PS";
-    var parts = ['<div class="detail-grid"><p>' + esc(it.summary) + "</p>"];
-    if (it.guard) parts.push('<p class="guard"><strong>Safety check</strong><span>' + esc(it.guard) + "</span></p>");
-    if (notGraph) {
-      parts.push('<p class="guard"><strong>Microsoft Graph</strong><span>' + esc(it.http.replace(/^\(|\)$/g, "")) + "</span></p>");
-    } else {
-      parts.push('<div class="cmd"><div class="cmd-head"><span class="label">Microsoft Graph</span>' +
-        '<button type="button" class="copy" data-copy-target="http-' + it.id + '">Copy</button></div>' +
-        '<pre class="code"><code id="http-' + it.id + '">' + highlight(it.http) + "</code></pre></div>");
-    }
-    parts.push('<div class="cmd"' + (notGraph ? ' style="grid-column: 1 / -1"' : "") + '><div class="cmd-head"><span class="label">PowerShell</span>' +
-      '<button type="button" class="copy" data-copy-target="ps-' + it.id + '">Copy</button></div>' +
-      '<pre class="code"><code id="ps-' + it.id + '">' + highlight(it.ps) + "</code></pre></div></div>");
-    return parts.join("");
-  }
-  function renderTable() {
-    if (!body) return;
-    var items = filtered();
-    body.innerHTML = items.map(function (it) {
-      var open = !!state.open[it.id];
-      return '<tr data-id="' + it.id + '"' + (open ? ' class="is-open"' : "") + ">" +
-        '<td><button type="button" class="row-toggle" aria-expanded="' + open + '" aria-controls="d-' + it.id + '">' +
-          markText(it.title, state.q) + "</button></td>" +
-        '<td><span class="pbadge" data-p="' + it.platform + '">' + it.platform + "</span></td>" +
-        '<td><span class="call"><span class="mbadge" data-m="' + it.method + '">' + it.method + "</span>" +
-          '<code title="' + esc(it.call) + '">' + esc(it.call) + "</code></span></td>" +
-        '<td><span class="risk" data-r="' + it.risk + '"><i></i>' + cap(it.risk) + "</span></td>" +
-        '<td><span class="plan-badge" data-plan="' + it.plan + '">' + it.plan + "</span></td></tr>" +
-        '<tr class="detail" id="d-' + it.id + '"' + (open ? "" : " hidden") + '><td colspan="5">' +
-          (open ? detailHTML(it) : "") + "</td></tr>";
-    }).join("");
-    var n = items.length;
-    $("#tk-count").textContent = n === TOOLKIT.length ? "Showing all " + n + " actions" :
-      "Showing " + n + " of " + TOOLKIT.length + " actions";
-    $("#tk-empty").hidden = n > 0;
-  }
-  function toggleRow(id, force) {
-    var open = force === undefined ? !state.open[id] : force;
-    state.open[id] = open;
-    var tr = body.querySelector('tr[data-id="' + id + '"]');
-    if (!tr) return;
-    var detail = tr.nextElementSibling, it = byId(id);
-    tr.classList.toggle("is-open", open);
-    $(".row-toggle", tr).setAttribute("aria-expanded", String(open));
-    detail.hidden = !open;
-    $("td", detail).innerHTML = open ? detailHTML(it) : "";
-  }
+  /* ---------- hero results open the matching part of the features page ---------- */
+  var FEATURE_ANCHORS = { Users: "people", Exchange: "people", Groups: "groups", Devices: "devices",
+                          Policies: "apps-policies", "Hybrid AD": "active-directory" };
   function openInExplorer(id) {
-    state.q = ""; state.area = "All"; state.plan = []; state.risk = []; state.method = [];
-    $("#tk-q").value = "";
-    $$(".chip").forEach(function (c) { c.setAttribute("aria-pressed", "false"); });
-    state.open = {}; state.open[id] = true;
-    renderAreas(); renderTable();
-    var row = body.querySelector('tr[data-id="' + id + '"]');
-    if (row) {
-      row.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
-      setTimeout(function () { $(".row-toggle", row).focus({ preventScroll: true }); }, reduceMotion ? 0 : 500);
-    }
+    var it = byId(id);
+    location.href = "/features.html#" + (it && FEATURE_ANCHORS[it.area] || "dashboard");
   }
-  if (body) {
-    renderAreas();
-    renderTable();
-    var qTimer;
-    $("#tk-q").addEventListener("input", function (e) {
-      clearTimeout(qTimer);
-      qTimer = setTimeout(function () { state.q = e.target.value; renderTable(); }, 120);
-    });
-    $("#tk-areas").addEventListener("click", function (e) {
-      var b = e.target.closest("button[data-area]");
-      if (!b) return;
-      state.area = b.getAttribute("data-area");
-      renderAreas(); renderTable();
-    });
-    $$(".chip").forEach(function (chip) {
-      chip.addEventListener("click", function () {
-        var key = chip.getAttribute("data-filter"), val = chip.getAttribute("data-value");
-        var list = state[key], at = list.indexOf(val);
-        if (at === -1) list.push(val); else list.splice(at, 1);
-        chip.setAttribute("aria-pressed", String(at === -1));
-        renderTable();
+
+  /* ---------- savings calculator ---------- */
+  var calc = $("#calc");
+  if (calc) {
+    var money = function (n) { return "£" + Math.round(n).toLocaleString("en-GB"); };
+    var MIN = { change: 17, everyday: 3.5, lookup: 4.5, admin: 3 };    // minutes saved each time, by hand vs EntraPlus
+    var update = function () {
+      var v = {};
+      $$("input[type=range]", calc).forEach(function (r) {
+        v[r.name] = Number(r.value);
+        var out = $('output[for="' + r.id + '"]', calc);
+        if (out) out.textContent = r.name === "rate" ? "£" + r.value : r.value;
       });
-    });
-    $$(".tk .sort").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        var key = btn.getAttribute("data-sort");
-        state.dir = state.sort === key ? -state.dir : 1;
-        state.sort = key;
-        $$(".tk .sort").forEach(function (b) {
-          b.removeAttribute("data-dir");
-          b.closest("th").removeAttribute("aria-sort");
-        });
-        btn.setAttribute("data-dir", state.dir === 1 ? "asc" : "desc");
-        btn.closest("th").setAttribute("aria-sort", state.dir === 1 ? "ascending" : "descending");
-        renderTable();
-      });
-    });
-    body.addEventListener("click", function (e) {
-      var b = e.target.closest(".row-toggle");
-      if (b) toggleRow(b.closest("tr").getAttribute("data-id"));
-    });
-    $("#tk-clear").addEventListener("click", function () {
-      state.q = ""; state.area = "All"; state.plan = []; state.risk = []; state.method = [];
-      $("#tk-q").value = "";
-      $$(".chip").forEach(function (c) { c.setAttribute("aria-pressed", "false"); });
-      renderAreas(); renderTable();
-    });
+      var minutes = v.changes * MIN.change * 12 + (v.everyday * MIN.everyday + v.lookups * MIN.lookup + v.admin * MIN.admin) * 52;
+      var hours = minutes / 60, value = hours * v.rate, cost = v.techs * 120;
+      var payback = value > 0 ? Math.max(1, Math.ceil(cost / (value / 365))) : 0;
+      $("#calc-hours").textContent = Math.round(hours).toLocaleString("en-GB");
+      $("#calc-days").textContent = (hours / 7.5).toFixed(0);
+      $("#calc-value").textContent = money(value);
+      $("#calc-cost").textContent = money(cost);
+      $("#calc-techs").textContent = v.techs + (v.techs === 1 ? " technician" : " technicians");
+      $("#calc-payback").textContent = !payback ? "–" : payback <= 31 ? payback + " day" + (payback === 1 ? "" : "s")
+        : payback <= 365 ? Math.round(payback / 7) + " weeks" : "over a year";
+    };
+    calc.addEventListener("input", update);
+    update();
   }
 
   /* ---------- screens gallery ---------- */

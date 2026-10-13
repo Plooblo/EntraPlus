@@ -6,8 +6,8 @@ window.EP_CONFIG = {
   // Where the download buttons point, e.g. your GitHub release assets:
   // "https://github.com/YOURNAME/entraplus/releases/latest/download/EntraPlus-Setup.exe"
   downloads: {
-    installer: "",
-    portable: ""
+    installer: "https://github.com/Plooblo/EntraPlus-Install/archive/refs/tags/Software.zip",
+    portable: "https://github.com/Plooblo/EntraPlus-Install/archive/refs/tags/Software.zip"
   },
 
   // Accounts. "demo" keeps everything in this browser only (for building and testing pages).

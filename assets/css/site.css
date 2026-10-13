@@ -427,7 +427,7 @@ section { padding-block: clamp(64px, 9vw, 112px); }
 .plan-note { color: var(--muted); }
 .ticks { list-style: none; display: grid; gap: 8px; margin-bottom: 8px; }
 .ticks li { display: grid; grid-template-columns: 22px 1fr; }
-.feature-points li::before { content: ""; width: 12px; height: 7px; margin-top: .55em; border-left: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); }
+.ticks li::before { content: ""; width: 12px; height: 7px; margin-top: .55em; border-left: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); }
 .plan .btn { justify-self: start; }
 
 /* ---------- download ---------- */

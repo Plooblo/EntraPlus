@@ -22,8 +22,8 @@ window.EP_CONFIG = {
   // These are TEST-MODE links from the "EntraPlus sandbox" account: no real money moves.
   // Swap them for live-mode links when you go live (see backend/README.md, "Going live").
   stripe: {
-    monthly: "https://buy.stripe.com/test_bJeaEXeoh2gi9BWg0w7Vm00",
-    yearly: "https://buy.stripe.com/test_3cI00j4NHf34cO801y7Vm01",
+    monthly: "https://buy.stripe.com/test_9B67sL3JDdZ09BWg0w7Vm02",
+    yearly: "https://buy.stripe.com/test_14AbJ1cg99IKeWg29G7Vm03",
     portal: "https://billing.stripe.com/p/login/test_bJeaEXeoh2gi9BWg0w7Vm00"
   }
 };

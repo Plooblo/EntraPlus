@@ -60,10 +60,10 @@
       $("#who-org").textContent = s.org ? s.org.name + (s.member ? " · " + (ROLES[s.member.role] || s.member.role) : "") : "";
       var m = s.member;
       $("#who-note").textContent =
-        !m ? "You're the first from your organisation. After continuing, set it up from your account page at entraplus.co.uk to buy Pro seats. Until then the app uses the Free plan."
-        : m.status === "pending" ? "Your manager hasn't approved you yet. The app will use the Free plan until they do."
+        !m ? "You're the first from your organisation. After continuing, set it up from your account page at entraplus.co.uk to start your free 30-day Pro trial. Until then the app is read-only (the Free plan)."
+        : m.status === "pending" ? "Your manager hasn't approved you yet. The app is read-only (the Free plan) until they do."
         : m.seat ? "Your Pro seat will switch on in the app automatically."
-        : "You don't have a Pro seat yet, so the app will use the Free plan until your manager gives you one.";
+        : "You don't have a Pro seat yet, so the app is read-only (the Free plan) until your manager gives you one.";
       show("#step-confirm");
       $("#continue").focus();
     });

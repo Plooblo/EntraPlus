@@ -36,9 +36,30 @@ export async function orgFor(db: SupabaseClient, subId: string, customerId: stri
   return sub.metadata?.org_id || null;
 }
 
+/** What a quantity of a price costs per period, in pence before tax. Handles flat prices and tiered ones
+ *  (yearly is graduated: the first 5 seats together cost the bundle price, then each extra seat the normal price). */
+export function priceTotal(price: Stripe.Price, quantity: number): number | null {
+  if (price.billing_scheme !== "tiered") return price.unit_amount == null ? null : price.unit_amount * quantity;
+  const tiers = price.tiers ?? [];
+  if (!tiers.length) return null;                 // tiers weren't expanded
+  const cost = (t: Stripe.Price.Tier, n: number) => (t.unit_amount ?? 0) * n + (n > 0 ? t.flat_amount ?? 0 : 0);
+  if (price.tiers_mode === "volume") {
+    const t = tiers.find((t) => t.up_to == null || quantity <= t.up_to) ?? tiers[tiers.length - 1];
+    return cost(t, quantity);
+  }
+  let total = 0, done = 0;
+  for (const t of tiers) {
+    const n = Math.max(0, Math.min(quantity, t.up_to ?? Infinity) - done);
+    total += cost(t, n);
+    done += n;
+    if (done >= quantity) break;
+  }
+  return total;
+}
+
 /** Bring one Stripe subscription into the organisation's record. Safe in any order, any number of times. */
 export async function syncSubscription(db: SupabaseClient, subId: string, orgHint?: string | null): Promise<string | null> {
-  const sub = await stripe.subscriptions.retrieve(subId);
+  const sub = await stripe.subscriptions.retrieve(subId, { expand: ["items.data.price.tiers"] });
   const customer = sub.customer as string;
   const orgId = await orgFor(db, sub.id, customer, orgHint ?? (sub.metadata?.org_id || null));
   if (!orgId) {
@@ -74,7 +95,8 @@ export async function syncSubscription(db: SupabaseClient, subId: string, orgHin
     status: statusOf(sub),
     period: item?.price.recurring?.interval === "year" ? "yearly" : "monthly",
     seats: item?.quantity ?? 0,
-    unit_amount: item?.price.unit_amount ?? null,
+    unit_amount: item?.price.unit_amount ?? null,          // null for tiered prices: use amount
+    amount: item ? priceTotal(item.price, item.quantity ?? 0) : null,
     currency: item?.price.currency ?? null,
     current_period_end: new Date(periodEnd(sub) * 1000).toISOString(),
     cancel_at_period_end: sub.cancel_at_period_end,

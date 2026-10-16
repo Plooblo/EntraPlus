@@ -350,7 +350,8 @@
         if (out) out.textContent = r.name === "rate" ? "£" + r.value : r.value;
       });
       var minutes = v.changes * MIN.change * 12 + (v.everyday * MIN.everyday + v.lookups * MIN.lookup + v.admin * MIN.admin) * 52;
-      var hours = minutes / 60, value = hours * v.rate, cost = v.techs * 120;
+      // Yearly price: £240 per technician, but the first 5 together are £1,000.
+      var hours = minutes / 60, value = hours * v.rate, cost = v.techs * 240 - (v.techs >= 5 ? 200 : 0);
       var payback = value > 0 ? Math.max(1, Math.ceil(cost / (value / 365))) : 0;
       $("#calc-hours").textContent = Math.round(hours).toLocaleString("en-GB");
       $("#calc-days").textContent = (hours / 7.5).toFixed(0);
@@ -383,7 +384,6 @@
       $$(".plan-pro [data-" + period + "]").forEach(function (el) { el.textContent = el.getAttribute("data-" + period); });
       if (cta) {
         cta.href = "/register.html?plan=" + period;
-        cta.textContent = period === "yearly" ? "Get Pro yearly" : "Get Pro monthly";
       }
     });
   });

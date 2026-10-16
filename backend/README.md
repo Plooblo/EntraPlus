@@ -10,7 +10,7 @@ This sets up the account system end to end:
    - **Senior technician:** may use advanced mode.
    - **Technician:** basic mode only.
 5. Only managers see the subscription, renewal or expiry date, prices and purchase history.
-6. The manager buys seats with **Stripe** (£15 per technician a month or £120 a year). Seat changes, plan switches, card updates, invoices and cancelling all happen on Stripe's secure billing page.
+6. A new organisation gets a free 30-day Pro trial for up to 5 technicians, once per Microsoft tenant (`update-trial.sql`). The manager then buys seats with **Stripe** (£20 per technician a month, or yearly at £240 per technician with 5 for £1,000). Seat changes, plan switches, card updates, invoices and cancelling all happen on Stripe's secure billing page.
 7. Anyone with a seat signs in to the **EntraPlus app** with the same account and Pro switches on automatically. Nobody sees, copies or types a licence key. Behind the scenes the server sends the app a signed pass for the seat, which expires 3 days after the paid period ends and is renewed automatically.
 
 The pieces:
@@ -35,10 +35,14 @@ What has been tested:
 | What | ID |
 |---|---|
 | Product: EntraPlus Pro (unit: technician) | `prod_VPb5nkEPEuzFKF` |
-| Monthly price: £15 per technician | `price_1UOltUFPvb7T5luTBx3oCxR7` (lookup key `entraplus_pro_monthly`) |
-| Yearly price: £120 per technician | `price_1UOltXFPvb7T5luTDe3NPAEL` (lookup key `entraplus_pro_yearly`) |
-| Monthly payment link (buyer picks 1 to 100 seats) | https://buy.stripe.com/test_bJeaEXeoh2gi9BWg0w7Vm00 |
-| Yearly payment link (buyer picks 1 to 100 seats) | https://buy.stripe.com/test_3cI00j4NHf34cO801y7Vm01 |
+| Old monthly price: £15 per technician (archive once the new one is live) | `price_1UOltUFPvb7T5luTBx3oCxR7` |
+| Old yearly price: £120 per technician (archive once the new one is live) | `price_1UOltXFPvb7T5luTDe3NPAEL` |
+| New monthly price: £20 per technician | `price_1URKb4FPvb7T5luTrjbq43Kz` (lookup key `entraplus_pro_monthly_2026`) |
+| New yearly price: graduated tiers 1-4 at £240, 5th at £40, 6+ at £240 | `price_1URKb5FPvb7T5luTHsQqM0iw` (lookup key `entraplus_pro_yearly_2026`) |
+| New monthly payment link (1 to 100 seats, starts at 1) | https://buy.stripe.com/test_9B67sL3JDdZ09BWg0w7Vm02 |
+| New yearly payment link (1 to 100 seats, starts at 5) | https://buy.stripe.com/test_14AbJ1cg99IKeWg29G7Vm03 |
+| Old monthly payment link | https://buy.stripe.com/test_bJeaEXeoh2gi9BWg0w7Vm00 |
+| Old yearly payment link | https://buy.stripe.com/test_3cI00j4NHf34cO801y7Vm01 |
 | Customer portal (seats, plan switch, card, invoices, cancel at period end) | `bpc_1UOluSFPvb7T5luT6MPpOeuD` |
 | Portal sign-in link | https://billing.stripe.com/p/login/test_bJeaEXeoh2gi9BWg0w7Vm00 |
 

@@ -77,17 +77,19 @@
         "publisher": { "@id": "https://entraplus.co.uk/#org" },
         "offers": [
           { "@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "GBP" },
-          { "@type": "Offer", "name": "Pro monthly", "price": "15", "priceCurrency": "GBP",
-            "priceSpecification": { "@type": "UnitPriceSpecification", "price": "15", "priceCurrency": "GBP", "billingDuration": "P1M" } },
-          { "@type": "Offer", "name": "Pro yearly", "price": "120", "priceCurrency": "GBP",
-            "priceSpecification": { "@type": "UnitPriceSpecification", "price": "120", "priceCurrency": "GBP", "billingDuration": "P1Y" } }
+          { "@type": "Offer", "name": "Pro monthly", "price": "20", "priceCurrency": "GBP",
+            "priceSpecification": { "@type": "UnitPriceSpecification", "price": "20", "priceCurrency": "GBP", "billingDuration": "P1M" } },
+          { "@type": "Offer", "name": "Pro yearly", "price": "240", "priceCurrency": "GBP",
+            "priceSpecification": { "@type": "UnitPriceSpecification", "price": "240", "priceCurrency": "GBP", "billingDuration": "P1Y" } },
+          { "@type": "Offer", "name": "Pro yearly, 5 technicians", "price": "1000", "priceCurrency": "GBP",
+            "priceSpecification": { "@type": "UnitPriceSpecification", "price": "1000", "priceCurrency": "GBP", "billingDuration": "P1Y" } }
         ]
       },
       {
         "@type": "FAQPage",
         "mainEntity": [
           { "@type": "Question", "name": "Is EntraPlus free?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Yes. The free version covers everyday user, group and device work for cloud accounts, with no time limit. Pro adds hybrid Active Directory, Exchange, licences, leavers, bulk starters, device actions, BitLocker and LAPS, Policies and Applications, advanced mode and CSV export for £15 a month or £120 a year per technician." } },
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes, to look things up. The Free plan is read-only with no time limit: look up users, groups, devices and licences, and export lists to CSV. Making changes needs Pro, at £20 a month or £240 a year per technician, or 5 technicians for £1,000 a year. Every new organisation gets a free 30-day Pro trial for up to 5 technicians, with no card needed." } },
           { "@type": "Question", "name": "Does my organisation's data go through EntraPlus servers?",
             "acceptedAnswer": { "@type": "Answer", "text": "No. The app runs on your PC and talks directly to Microsoft and your own domain controllers. Nothing about your users, devices or policies is sent to us." } },
           { "@type": "Question", "name": "Can EntraPlus edit accounts that sync from on-premises Active Directory?",
@@ -270,7 +272,7 @@
           <div class="calc-result" aria-live="polite">
             <p class="calc-big"><strong id="calc-hours">146</strong> hours back a year</p>
             <p class="calc-sub">That's about <strong id="calc-days">19</strong> working days, worth <strong id="calc-value">£3,212</strong> of your team's time.</p>
-            <p class="calc-sub">EntraPlus Pro for <span id="calc-techs">3 technicians</span>: <strong id="calc-cost">£360</strong> a year.</p>
+            <p class="calc-sub">EntraPlus Pro for <span id="calc-techs">3 technicians</span>: <strong id="calc-cost">£720</strong> a year.</p>
             <p class="calc-payback">Pays for itself in <strong id="calc-payback">41 days</strong></p>
             <div class="cta-row">
               <a class="btn btn-primary" href="#download">Download free</a>
@@ -352,40 +354,42 @@
     <section id="pricing" aria-labelledby="pricing-title">
       <div class="wrap">
         <div class="section-head">
-          <h2 id="pricing-title">Free for everyday work. Pro when you want the rest.</h2>
-          <p>One price per technician. No setup fees and no per-user charges, however big your school.</p>
+          <h2 id="pricing-title">Look things up for free. Make changes with Pro.</h2>
+          <p>One price per technician. No setup fees and no per-user charges, however big your school. Every new
+            organisation gets a <strong>free 30-day Pro trial</strong> for up to 5 technicians, with no card needed.</p>
         </div>
         <fieldset class="billing">
           <legend class="sr-only">Billing period</legend>
           <input type="radio" name="billing" id="bill-month" value="monthly">
           <label for="bill-month">Monthly</label>
           <input type="radio" name="billing" id="bill-year" value="yearly" checked>
-          <label for="bill-year">Yearly <span class="badge badge-pro">Save £60</span></label>
+          <label for="bill-year">Yearly <span class="badge badge-pro">5 for £1,000</span></label>
         </fieldset>
         <div class="plans">
           <article class="plan" aria-labelledby="plan-free">
             <h3 id="plan-free">Free</h3>
             <p class="price"><span class="amount">£0</span></p>
-            <p class="plan-note">For as long as you like.</p>
+            <p class="plan-note">Read-only, for as long as you like.</p>
             <ul class="ticks">
-              <li>Find, create and edit cloud users</li>
-              <li>Disable, reset passwords, sign out everywhere</li>
-              <li>Restore deleted users</li>
-              <li>Security and Microsoft 365 groups</li>
-              <li>Intune device list and sync</li>
-              <li>Active Directory OU browser and filters</li>
-              <li>Dashboard, quick jobs and activity log</li>
+              <li>Look up any user: details, status, groups and licences</li>
+              <li>Browse groups and their members</li>
+              <li>Intune device list and compliance</li>
+              <li>Dashboard with licence counts</li>
+              <li>Filters and saved views</li>
+              <li>Export users, devices and group members to CSV</li>
+              <li>Nothing in your tenant can be changed</li>
             </ul>
             <a class="btn" href="#download">Download free</a>
           </article>
           <article class="plan plan-pro" aria-labelledby="plan-pro">
             <h3 id="plan-pro">Pro</h3>
             <p class="price" aria-live="polite">
-              <span class="amount" data-yearly="£120" data-monthly="£15">£120</span>
-              <span class="per" data-yearly="per technician a year, about £10 a month" data-monthly="per technician a month, cancel any time">per technician a year, about £10 a month</span>
+              <span class="amount" data-yearly="£240" data-monthly="£20">£240</span>
+              <span class="per" data-yearly="per technician a year, or 5 technicians for £1,000 (then £240 each)" data-monthly="per technician a month, cancel any time">per technician a year, or 5 technicians for £1,000 (then £240 each)</span>
             </p>
             <p class="plan-note">Everything in Free, plus:</p>
             <ul class="ticks">
+              <li>Make changes: new users, edits, passwords, unlocks, groups and device sync</li>
               <li>Hybrid Active Directory accounts and groups</li>
               <li>Exchange: aliases, distribution lists, shared mailboxes</li>
               <li>Licence management</li>
@@ -395,10 +399,10 @@
               <li>BitLocker recovery keys and LAPS passwords</li>
               <li>Policies and Applications, with Conditional Access templates</li>
               <li>Advanced mode, with a manager deciding who gets it</li>
-              <li>Export to CSV</li>
               <li>Every new toolkit feature as it arrives</li>
             </ul>
-            <a class="btn btn-primary" id="pro-cta" href="/register.html?plan=yearly">Get Pro yearly</a>
+            <a class="btn btn-primary" id="pro-cta" href="/register.html?plan=yearly">Start your free trial</a>
+            <p class="hint">30 days of Pro for up to 5 technicians. No card needed.</p>
           </article>
         </div>
       </div>
@@ -425,11 +429,11 @@
           <p>Push it silently from Intune or your RMM tool:</p>
           <div class="cmd">
             <div class="cmd-head"><span class="mbadge" data-m="PS">PowerShell</span><button type="button" class="copy" data-copy-target="cmd-all">Copy</button></div>
-            <pre class="code"><code id="cmd-all">.\EntraPlus-Setup.exe /VERYSILENT /ALLUSERS</code></pre>
+            <pre class="code" tabindex="0" aria-label="Install command for all users"><code id="cmd-all">.\EntraPlus-Setup.exe /VERYSILENT /ALLUSERS</code></pre>
           </div>
           <div class="cmd">
             <div class="cmd-head"><span class="mbadge" data-m="PS">PowerShell</span><button type="button" class="copy" data-copy-target="cmd-user">Copy</button></div>
-            <pre class="code"><code id="cmd-user">.\EntraPlus-Setup.exe /VERYSILENT /CURRENTUSER</code></pre>
+            <pre class="code" tabindex="0" aria-label="Install command for the current user"><code id="cmd-user">.\EntraPlus-Setup.exe /VERYSILENT /CURRENTUSER</code></pre>
           </div>
         </div>
       </div>
@@ -445,7 +449,11 @@
         <div class="faq">
           <details>
             <summary>Is EntraPlus free?</summary>
-            <p>Yes. The free version covers everyday user, group and device work for cloud accounts, with no time limit. Pro adds hybrid Active Directory, Exchange, licences, leavers, bulk starters, device actions, BitLocker and LAPS, Conditional Access templates and CSV export.</p>
+            <p>Yes, to look things up. The Free plan is read-only with no time limit: look up users, groups, devices and licences, and export lists to CSV. Making changes needs Pro, at £20 a month or £240 a year per technician, or 5 technicians for £1,000 a year. Every new organisation gets a free 30-day Pro trial for up to 5 technicians, with no card needed.</p>
+          </details>
+          <details>
+            <summary>How does the free trial work?</summary>
+            <p>The first person from your school to sign in sets up your organisation and becomes its manager. Your organisation then gets 30 days of Pro for up to 5 technicians, with no card needed. The manager hands out the seats. Each organisation gets one trial. When it ends, the app carries on as the read-only Free plan until you choose a plan.</p>
           </details>
           <details>
             <summary>Does my organisation's data go through your servers?</summary>
@@ -465,7 +473,7 @@
           </details>
           <details>
             <summary>Can I cancel?</summary>
-            <p>Any time from your account page. Pro keeps working until the end of the period you've paid for, then the app carries on as Free.</p>
+            <p>Any time from your account page. Pro keeps working until the end of the period you've paid for, then the app carries on as the read-only Free plan.</p>
           </details>
           <details>
             <summary>Is it only for schools?</summary>

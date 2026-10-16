@@ -99,9 +99,11 @@
       }
       var id = uid();
       d.orgs[id] = { id: id, name: name.trim(), tenant: tenant };
-      d.subs[id] = { status: "none", seats: 0 };
+      // Same as the server: a new organisation starts a 30-day Pro trial for up to 5 technicians.
+      d.subs[id] = { status: "active", source: "trial", seats: 5, note: "30-day free trial",
+                     current_period_end: new Date(Date.now() + 30 * 86400000).toISOString(), cancel_at_period_end: false };
       d.members.push({ org_id: id, user_id: u.id, email: u.email, name: u.name, role: "manager", status: "active",
-                       seat: false, joined_at: new Date().toISOString() });
+                       seat: true, joined_at: new Date().toISOString() });
       // Demo only: two colleagues from the same "tenant" waiting to be approved, so the manager screen has something in it.
       ["alex.morgan", "sam.patel"].forEach(function (p, i) {
         d.members.push({ org_id: id, user_id: uid(), email: p + "@" + tenant, name: niceName(p), role: "technician",
@@ -200,11 +202,14 @@
     simulatePurchase: function (orgId, period, seats) {
       var d = db(), end = new Date();
       end.setMonth(end.getMonth() + (period === "yearly" ? 12 : 1));
-      var unit = period === "yearly" ? 12000 : 1500;
-      d.subs[orgId] = { status: "active", period: period, seats: seats, unit_amount: unit, currency: "gbp",
+      // Yearly is tiered like Stripe: the first 5 seats together cost £1,000, then £240 each.
+      var unit = period === "yearly" ? null : 2000;
+      var amount = period === "yearly" ? Math.min(seats, 4) * 24000 + (seats >= 5 ? 4000 : 0) + Math.max(0, seats - 5) * 24000
+                                       : unit * seats;
+      d.subs[orgId] = { status: "active", source: "stripe", period: period, seats: seats, unit_amount: unit, amount: amount, currency: "gbp",
                         current_period_end: end.toISOString(), cancel_at_period_end: false };
       (d.invoices[orgId] = d.invoices[orgId] || []).push({
-        id: uid(), number: "DEMO-" + String(1000 + d.invoices[orgId].length), status: "paid", amount: unit * seats,
+        id: uid(), number: "DEMO-" + String(1000 + d.invoices[orgId].length), status: "paid", amount: amount,
         currency: "gbp", seats: seats, period: period, created: new Date().toISOString(), hosted_url: "", pdf_url: ""
       });
       var manager = d.members.filter(function (x) { return x.org_id === orgId && x.role === "manager" && x.status === "active"; })[0];

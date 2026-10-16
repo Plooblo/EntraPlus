@@ -71,11 +71,11 @@ async function overview() {
       managers: ms.filter((m) => m.role === "manager" && m.status === "active").map((m) => m.email),
       seats: s?.seats ?? 0, status: expired && s?.status === "active" ? "expired" : s?.status ?? "none",
       source: s?.source ?? "stripe", period: s?.period, ends: s?.current_period_end, cancelling: s?.cancel_at_period_end,
-      unit_amount: s?.unit_amount, note: s?.note,
+      unit_amount: s?.unit_amount, amount: s?.amount ?? (s?.unit_amount != null ? s.unit_amount * (s?.seats ?? 0) : null), note: s?.note,
     };
   });
   const paying = rows.filter((r) => r.status === "active" && r.source === "stripe");
-  const monthly = paying.reduce((sum, r) => sum + (r.unit_amount ?? 0) * r.seats / (r.period === "yearly" ? 12 : 1), 0);
+  const monthly = paying.reduce((sum, r) => sum + (r.amount ?? 0) / (r.period === "yearly" ? 12 : 1), 0);
   return { organisations: rows, recent_invoices: invoices ?? [],
            totals: { organisations: rows.length, paying: paying.length, trials: rows.filter((r) => r.source === "trial" && r.status === "active").length,
                      seats: paying.reduce((n, r) => n + r.seats, 0), monthly_revenue_pence: Math.round(monthly) } };
@@ -114,7 +114,7 @@ async function grant(admin: string, b: Record<string, any>) {
     throw new Problem("This organisation pays through Stripe. Use 'Give free time' instead, so billing stays correct.");
   }
   const { error } = await db.from("subscriptions").upsert({
-    org_id: orgId, source: kind, status: "active", seats, period: null, unit_amount: null, currency: null,
+    org_id: orgId, source: kind, status: "active", seats, period: null, unit_amount: null, amount: null, currency: null,
     current_period_end: until.toISOString(), cancel_at_period_end: false, note: String(b.note ?? "").slice(0, 200) || null,
     stripe_subscription: null, updated_at: new Date().toISOString(),
   });

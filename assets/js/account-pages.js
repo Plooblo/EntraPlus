@@ -34,8 +34,9 @@
   if (page === "login" || page === "register") {
     var plan = params.get("plan");
     if (page === "register" && plan && $("#plan-note")) {
-      $("#plan-note").textContent = "After signing in you'll set up your organisation, then choose the " +
-        (plan === "monthly" ? "monthly" : "yearly") + " plan and how many technician seats you need.";
+      $("#plan-note").textContent = "After signing in you'll set up your organisation, and its free 30-day Pro trial " +
+        "starts straight away for up to 5 technicians. Choose the " + (plan === "monthly" ? "monthly" : "yearly") +
+        " plan whenever you're ready. No card needed for the trial.";
       $("#plan-note").hidden = false;
     }
     if (auth.mode === "demo") $("#demo-signin").hidden = false;
@@ -110,7 +111,7 @@
       showError(err, "");
       if (input.value.trim().length < 2) { showError(err, "Enter your organisation's name."); return; }
       auth.createOrganisation(input.value.trim()).then(function () {
-        toast("Organisation set up. You're its manager.");
+        toast("Organisation set up. Your free 30-day Pro trial has started.");
         return refresh();
       }).catch(function (e2) { showError(err, e2.message); });
     };
@@ -166,7 +167,7 @@
       ? "Sign in to the EntraPlus app with this account and Pro switches on automatically. There's nothing to copy or paste."
       : m.role === "manager"
         ? "Choose a plan, then give yourself a seat under People. Pro switches on in the app automatically."
-        : "EntraPlus works on the Free plan without one. Ask your manager for a Pro seat; it switches on in the app automatically.";
+        : "Without one, the app is read-only: you can look things up and export lists. Ask your manager for a Pro seat; it switches on in the app automatically.";
   }
 
   /* ---------------- PCs signed in to the desktop app */
@@ -182,7 +183,7 @@
   }
   $("#pcs-list").addEventListener("click", function (e) {
     var b = e.target.closest("button[data-pc]");
-    if (!b || !confirm("Sign this PC out of EntraPlus? It will use the Free plan until someone signs in again.")) return;
+    if (!b || !confirm("Sign this PC out of EntraPlus? The app will ask for a sign-in before it can be used again.")) return;
     auth.endAppSession(b.getAttribute("data-pc")).then(function () { toast("PC signed out"); loadPcs(); }, fail);
   });
 
@@ -204,18 +205,22 @@
         : { active: "Pro", past_due: "Payment due", cancelled: "Cancelled", none: "Free" }[s.status] || s.status;
       badge.setAttribute("data-plan", active ? "Pro" : "Free");
       $("#sub-plan").textContent = active && s.source === "trial"
-        ? "Free trial of EntraPlus Pro for " + s.seats + " technician" + (s.seats === 1 ? "" : "s") + ". Choose a plan below to keep Pro afterwards."
+        ? "Free trial of EntraPlus Pro for up to " + s.seats + " technician" + (s.seats === 1 ? "" : "s") +
+          ". Give seats out under People, and choose a plan below to keep Pro afterwards."
         : active && s.source === "manual"
         ? "EntraPlus Pro for " + s.seats + " technician" + (s.seats === 1 ? "" : "s") + ", arranged with EntraPlus" + (s.note ? " (" + s.note + ")" : "") + "."
-        : expired && granted ? "Your " + (s.source === "trial" ? "trial" : "licence") + " has ended. Choose a plan to carry on with Pro."
+        : expired && granted ? "Your " + (s.source === "trial" ? "trial" : "licence") + " has ended, so the app is read-only. Choose a plan to carry on with Pro."
         : active
         ? "EntraPlus Pro, " + (s.period === "yearly" ? "yearly" : "monthly") + " for " + s.seats + " technician" + (s.seats === 1 ? "" : "s")
         : s.status === "past_due" ? "The last payment didn't go through. Update your card to keep Pro."
-        : "No paid plan yet. Everyone in your organisation can use the Free plan.";
+        : "No paid plan yet. Everyone in your organisation can use the Free plan, which is read-only.";
       var facts = [];
+      var total = s.amount != null ? s.amount : s.unit_amount ? s.unit_amount * s.seats : null;
       if (s.unit_amount) {
         facts.push(["Price", money(s.unit_amount, s.currency) + " per technician " + (s.period === "yearly" ? "a year" : "a month")]);
-        facts.push(["Total", money(s.unit_amount * s.seats, s.currency) + (s.period === "yearly" ? " a year" : " a month") + " plus any VAT"]);
+      }
+      if (total != null && active && !granted) {
+        facts.push(["Total", money(total, s.currency) + (s.period === "yearly" ? " a year" : " a month") + " plus any VAT"]);
       }
       if (s.current_period_end) {
         facts.push([s.cancel_at_period_end || s.status === "cancelled" || granted || expired ? (expired ? "Ended" : "Ends") : "Renews",

@@ -13,7 +13,7 @@ window.TOOLKIT = [
   "id": "new-starter",
   "title": "Create a new starter",
   "area": "Users",
-  "plan": "Free",
+  "plan": "Pro",
   "summary": "Name, username, domain, job title and a temporary password in one form. The sign-in name is built for you so it can't be mistyped.",
   "mins": 12
  },
@@ -21,7 +21,7 @@ window.TOOLKIT = [
   "id": "edit-details",
   "title": "Edit names, job title and department",
   "area": "Users",
-  "plan": "Free",
+  "plan": "Pro",
   "summary": "Every field shows where it is saved, and changed fields are highlighted until you save.",
   "mins": 3
  },
@@ -29,7 +29,7 @@ window.TOOLKIT = [
   "id": "change-upn",
   "title": "Change someone's sign-in name",
   "area": "Users",
-  "plan": "Free",
+  "plan": "Pro",
   "summary": "Pick the new name and choose the domain from a list of your verified domains.",
   "mins": 3
  },
@@ -37,7 +37,7 @@ window.TOOLKIT = [
   "id": "disable",
   "title": "Disable or enable sign-in",
   "area": "Users",
-  "plan": "Free",
+  "plan": "Pro",
   "summary": "Block or allow sign-in, with the account's live status shown at the top of the screen.",
   "mins": 3
  },
@@ -45,7 +45,7 @@ window.TOOLKIT = [
   "id": "reset-password",
   "title": "Reset a password",
   "area": "Users",
-  "plan": "Free",
+  "plan": "Pro",
   "summary": "Generates a readable temporary password, with copy and must-change options.",
   "mins": 4
  },
@@ -53,7 +53,7 @@ window.TOOLKIT = [
   "id": "revoke",
   "title": "Sign out everywhere",
   "area": "Users",
-  "plan": "Free",
+  "plan": "Pro",
   "summary": "Ends every session on every device. Useful after a password reset or a lost phone.",
   "mins": 3
  },
@@ -61,7 +61,7 @@ window.TOOLKIT = [
   "id": "delete-user",
   "title": "Delete a user",
   "area": "Users",
-  "plan": "Free",
+  "plan": "Pro",
   "summary": "Soft-deletes the account. It can be restored for 30 days.",
   "mins": 3
  },
@@ -69,7 +69,7 @@ window.TOOLKIT = [
   "id": "restore-user",
   "title": "Restore a deleted user",
   "area": "Users",
-  "plan": "Free",
+  "plan": "Pro",
   "summary": "Lists deleted accounts from Entra (and AD with Pro) and brings one back.",
   "mins": 8
  },
@@ -101,7 +101,7 @@ window.TOOLKIT = [
   "id": "export-users",
   "title": "Export all users to CSV",
   "area": "Users",
-  "plan": "Pro",
+  "plan": "Free",
   "summary": "A spreadsheet of every account with names, roles, department and status.",
   "mins": 15
  },
@@ -109,7 +109,7 @@ window.TOOLKIT = [
   "id": "add-member",
   "title": "Add someone to a group",
   "area": "Groups",
-  "plan": "Free",
+  "plan": "Pro",
   "summary": "Works for security and Microsoft 365 groups. Dynamic groups are explained, not silently refused.",
   "mins": 4
  },
@@ -117,7 +117,7 @@ window.TOOLKIT = [
   "id": "remove-member",
   "title": "Remove members from a group",
   "area": "Groups",
-  "plan": "Free",
+  "plan": "Pro",
   "summary": "Select one or many members and remove them together.",
   "mins": 4
  },
@@ -125,7 +125,7 @@ window.TOOLKIT = [
   "id": "new-group",
   "title": "Create a security or Microsoft 365 group",
   "area": "Groups",
-  "plan": "Free",
+  "plan": "Pro",
   "summary": "Plain-English group types, so you pick the right one first time.",
   "mins": 6
  },
@@ -133,7 +133,7 @@ window.TOOLKIT = [
   "id": "delete-group",
   "title": "Delete a group",
   "area": "Groups",
-  "plan": "Free",
+  "plan": "Pro",
   "summary": "Microsoft 365 and security groups can be restored for 30 days.",
   "mins": 4
  },
@@ -149,7 +149,7 @@ window.TOOLKIT = [
   "id": "export-members",
   "title": "Export group members",
   "area": "Groups",
-  "plan": "Pro",
+  "plan": "Free",
   "summary": "A CSV of everyone in a group, for audits and reports.",
   "mins": 15
  },
@@ -165,7 +165,7 @@ window.TOOLKIT = [
   "id": "sync",
   "title": "Sync a device now",
   "area": "Devices",
-  "plan": "Free",
+  "plan": "Pro",
   "summary": "Ask a laptop or iPad to check in with Intune straight away.",
   "mins": 3
  },
@@ -213,7 +213,7 @@ window.TOOLKIT = [
   "id": "export-devices",
   "title": "Export devices to CSV",
   "area": "Devices",
-  "plan": "Pro",
+  "plan": "Free",
   "summary": "Your filtered device list as a spreadsheet: serials, users, compliance, last check-in.",
   "mins": 15
  },

@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EntraPlus: Active Directory and Microsoft Entra admin toolkit for schools</title>
+  <meta name="description" content="Starters, leavers, BitLocker keys, locked-out accounts, licences and Intune devices from one Windows app built for school IT teams. Get hours back every week. Free to download.">
+  <link rel="canonical" href="https://entraplus.co.uk/">
+  <meta name="theme-color" content="#0D1824" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#F4F7F9" media="(prefers-color-scheme: light)">
+  <meta name="color-scheme" content="dark light">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="EntraPlus">
+  <meta property="og:url" content="https://entraplus.co.uk/">
+  <meta property="og:title" content="EntraPlus: the interactive toolkit for Active Directory and Microsoft Entra">
+  <meta property="og:description" content="Starters, leavers, devices, groups and Active Directory in one calm Windows app. The jobs that eat your week, done in a click or two.">
+  <meta property="og:image" content="https://entraplus.co.uk/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="EntraPlus showing a user's details, status badges and account actions">
+  <meta property="og:locale" content="en_GB">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+
+  <link rel="preload" href="/assets/fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" as="image" href="/assets/img/shots/dark-users-1600.webp"
+        imagesrcset="/assets/img/shots/dark-users-640.webp 640w, /assets/img/shots/dark-users-960.webp 960w, /assets/img/shots/dark-users-1600.webp 1600w"
+        imagesizes="(min-width: 1240px) 1160px, 94vw" fetchpriority="high">
+  <link rel="stylesheet" href="/assets/css/site.css">
+  <script>
+    /* Set the theme before the page paints, so there's no flash. */
+    (function () {
+      try {
+        var t = localStorage.getItem("ep-theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        document.documentElement.dataset.theme = t;
+      } catch (e) { document.documentElement.dataset.theme = "dark"; }
+    })();
+  </script>
+  <script src="/assets/js/config.js" defer></script>
+  <script src="/assets/js/header-account.js" defer></script>
+  <script src="/assets/js/toolkit-data.js" defer></script>
+  <script src="/assets/js/site.js" defer></script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://entraplus.co.uk/#org",
+        "name": "EntraPlus",
+        "url": "https://entraplus.co.uk/",
+        "logo": "https://entraplus.co.uk/assets/img/brand/icon-512.png"
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://entraplus.co.uk/#site",
+        "url": "https://entraplus.co.uk/",
+        "name": "EntraPlus",
+        "publisher": { "@id": "https://entraplus.co.uk/#org" }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "EntraPlus",
+        "applicationCategory": "BusinessApplication",
+        "applicationSubCategory": "IT administration",
+        "operatingSystem": "Windows 10, Windows 11",
+        "url": "https://entraplus.co.uk/",
+        "image": "https://entraplus.co.uk/og-image.png",
+        "description": "A Windows app for managing Microsoft Entra ID, Intune, Exchange Online and on-premises Active Directory: new starters, leavers, groups, devices and Conditional Access.",
+        "publisher": { "@id": "https://entraplus.co.uk/#org" },
+        "offers": [
+          { "@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "GBP" },
+          { "@type": "Offer", "name": "Pro monthly", "price": "20", "priceCurrency": "GBP",
+            "priceSpecification": { "@type": "UnitPriceSpecification", "price": "20", "priceCurrency": "GBP", "billingDuration": "P1M" } },
+          { "@type": "Offer", "name": "Pro yearly", "price": "240", "priceCurrency": "GBP",
+            "priceSpecification": { "@type": "UnitPriceSpecification", "price": "240", "priceCurrency": "GBP", "billingDuration": "P1Y" } },
+          { "@type": "Offer", "name": "Pro yearly, 5 technicians", "price": "1000", "priceCurrency": "GBP",
+            "priceSpecification": { "@type": "UnitPriceSpecification", "price": "1000", "priceCurrency": "GBP", "billingDuration": "P1Y" } }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          { "@type": "Question", "name": "Is EntraPlus free?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes, to look things up. The Free plan is read-only with no time limit: look up users, groups, devices and licences, and export lists to CSV. Making changes needs Pro, at £20 a month or £240 a year per technician, or 5 technicians for £1,000 a year. Every new organisation gets a free 30-day Pro trial for up to 5 technicians, with no card needed." } },
+          { "@type": "Question", "name": "Does my organisation's data go through EntraPlus servers?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. The app runs on your PC and talks directly to Microsoft and your own domain controllers. Nothing about your users, devices or policies is sent to us." } },
+          { "@type": "Question", "name": "Can EntraPlus edit accounts that sync from on-premises Active Directory?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes, with Pro. EntraPlus detects synced accounts and saves changes to Active Directory, which Microsoft Entra would otherwise refuse." } },
+          { "@type": "Question", "name": "What permissions does EntraPlus need?",
+            "acceptedAnswer": { "@type": "Answer", "text": "You sign in with your own admin account, and EntraPlus can never do more than your Entra role allows. A Global Administrator approves its permissions once for the organisation." } },
+          { "@type": "Question", "name": "Is EntraPlus made by Microsoft?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. EntraPlus is an independent product and is not affiliated with or endorsed by Microsoft." } }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="brand" href="/" aria-label="EntraPlus home">
+        <img src="/favicon.svg" width="32" height="32" alt="">
+        <span>EntraPlus</span>
+      </a>
+      <nav class="site-nav" id="site-nav" aria-label="Main">
+        <a href="/features.html">Features</a>
+        <a href="#time">Time saved</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">Questions</a>
+        <a href="/login.html" class="nav-login">Sign in</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch to light mode">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
+        </button>
+        <a class="btn btn-primary btn-small" href="#download">Download free</a>
+        <button class="icon-btn menu-btn" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero: the headline, and a live search of everything the toolkit can do -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <h1 id="hero-title">Microsoft&nbsp;365 and Active&nbsp;Directory admin, made&nbsp;simple.</h1>
+          <p class="lede">Starters, leavers, BitLocker keys, locked-out accounts and licences, from one calm Windows app built for school IT teams. The jobs that take ten minutes across four admin centres take a click or two.</p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="#download">Download free for Windows</a>
+            <a class="btn" href="#pricing">See what Pro adds</a>
+          </div>
+          <ul class="platform-list" aria-label="Works with">
+            <li><span class="pbadge" data-p="Entra">Microsoft Entra ID</span></li>
+            <li><span class="pbadge" data-p="Intune">Intune</span></li>
+            <li><span class="pbadge" data-p="Exchange">Exchange Online</span></li>
+            <li><span class="pbadge" data-p="AD">Active Directory</span></li>
+          </ul>
+          <ul class="trust">
+            <li><span><strong>Runs on your PC.</strong> Your users, devices and policies never pass through our servers.</span></li>
+            <li><span><strong>Free 30-day Pro trial</strong> for up to 5 technicians. No card needed.</span></li>
+            <li><span><strong>Built in a UK school</strong> by an IT technician, for IT teams like yours.</span></li>
+          </ul>
+        </div>
+
+        <div class="console" role="search" aria-label="Search the toolkit">
+          <div class="console-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+          <label class="console-label" for="hero-q">What do you need to do?</label>
+          <div class="console-input">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+            <input id="hero-q" type="search" autocomplete="off" spellcheck="false" placeholder="Try leaver, bitlocker or password" aria-controls="hero-results" aria-describedby="hero-hint">
+          </div>
+          <ul id="hero-results" class="console-results" aria-live="polite"></ul>
+          <p id="hero-hint" class="console-hint">Choose a result to see how EntraPlus does it.</p>
+        </div>
+      </div>
+
+      <div class="wrap">
+        <figure class="stage">
+          <div class="window">
+            <div class="window-bar" aria-hidden="true"><span></span><span></span><span></span><b>EntraPlus</b></div>
+            <img src="/assets/img/shots/dark-users-1600.webp"
+                 srcset="/assets/img/shots/dark-users-640.webp 640w, /assets/img/shots/dark-users-960.webp 960w, /assets/img/shots/dark-users-1600.webp 1600w"
+                 sizes="(min-width: 1240px) 1160px, 94vw" width="1600" height="1006" fetchpriority="high"
+                 alt="EntraPlus user screen: Jane Smith, synced from Active Directory, with live status badges, account actions and an unsaved job title change highlighted">
+          </div>
+          <figcaption>One screen for every account, whether it lives in Microsoft 365, Exchange or Active Directory. Changes stay highlighted until you save them.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Before and after -->
+    <section id="compare" class="band" aria-labelledby="compare-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="compare-title">The same job, before and after</h2>
+          <p>Three things school IT teams do every week. Drag the divider to compare the PowerShell route with EntraPlus.</p>
+        </div>
+        <div class="tabs" role="tablist" aria-label="Choose a job to compare">
+          <button role="tab" id="tab-starter" aria-selected="true" aria-controls="compare-panel" data-job="starter">New starter</button>
+          <button role="tab" id="tab-leaver" aria-selected="false" aria-controls="compare-panel" data-job="leaver" tabindex="-1">Leaver</button>
+          <button role="tab" id="tab-bitlocker" aria-selected="false" aria-controls="compare-panel" data-job="bitlocker" tabindex="-1">Locked-out laptop</button>
+        </div>
+        <div id="compare-panel" role="tabpanel" aria-labelledby="tab-starter" tabindex="0">
+          <div class="compare" style="--pos: 50%">
+            <div class="compare-before">
+              <p class="compare-tag">Before: PowerShell</p>
+              <pre class="code" tabindex="0" aria-label="PowerShell for this task"><code id="compare-code"></code></pre>
+            </div>
+            <div class="compare-after">
+              <p class="compare-tag compare-tag-after">After: EntraPlus</p>
+              <img id="compare-img" src="/assets/img/shots/after-starter-1600.webp"
+                   srcset="/assets/img/shots/after-starter-640.webp 640w, /assets/img/shots/after-starter-960.webp 960w, /assets/img/shots/after-starter-1600.webp 1600w"
+                   sizes="(min-width: 1240px) 1160px, 94vw" width="1600" height="1006" loading="lazy" alt="">
+            </div>
+            <div class="compare-handle" aria-hidden="true"><span></span></div>
+            <input class="compare-range" type="range" min="0" max="100" value="50" aria-label="Divider position: drag left to see more of EntraPlus">
+          </div>
+          <dl class="compare-facts">
+            <div><dt>Before</dt><dd id="fact-before"></dd></div>
+            <div><dt>After</dt><dd id="fact-after"></dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- Time back: the jobs that eat the week, and what EntraPlus gives back -->
+    <section id="time" aria-labelledby="time-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="time-title">Hours back, every week</h2>
+          <p>The jobs that come round every week in a school IT office, done in a click or two instead of a tour of admin centres.</p>
+        </div>
+        <ul class="time-cards">
+          <li class="time-card">
+            <h3>A member of staff leaves</h3>
+            <p class="before"><span>Before</span>Four admin centres and a checklist. About 25 minutes, and it's easy to miss a step.</p>
+            <p class="after"><span>With EntraPlus</span>One window. Under a minute.</p>
+            <p class="detail">Sign-in blocked, signed out everywhere, licences and groups removed, mailbox shared, every step confirmed.</p>
+          </li>
+          <li class="time-card">
+            <h3>Someone's locked out</h3>
+            <p class="before"><span>Before</span>Remote into a server, open AD Users and Computers, find them. About 4 minutes.</p>
+            <p class="after"><span>With EntraPlus</span>Seen on your dashboard. Unlocked in 10 seconds.</p>
+            <p class="detail">Locked-out accounts appear before the phone rings, and a quick job unlocks them.</p>
+          </li>
+          <li class="time-card">
+            <h3>"I'm on the BitLocker screen"</h3>
+            <p class="before"><span>Before</span>Intune, then the device, then recovery keys, then match the ID. About 5 minutes.</p>
+            <p class="after"><span>With EntraPlus</span>Type the name, read out the key. 10 seconds.</p>
+            <p class="detail">Works for keys saved in Entra or Active Directory, and LAPS passwords too.</p>
+          </li>
+          <li class="time-card">
+            <h3>A new starter on Monday</h3>
+            <p class="before"><span>Before</span>Account, licence, groups, mailbox, password. About 12 minutes, and a typo means starting again.</p>
+            <p class="after"><span>With EntraPlus</span>One form. Two minutes.</p>
+            <p class="detail">The sign-in name builds itself, the licence shows how many are left, and the password is ready to copy.</p>
+          </li>
+          <li class="time-card">
+            <h3>Move a classroom of PCs</h3>
+            <p class="before"><span>Before</span>Find each computer, open it, move it, repeat. About 15 minutes for a classroom.</p>
+            <p class="after"><span>With EntraPlus</span>Select them all, drag onto the OU. 20 seconds.</p>
+            <p class="detail">Filters find them first: not seen for 90 days, Windows 10, no description, or your own.</p>
+          </li>
+          <li class="time-card">
+            <h3>Licences quietly run out</h3>
+            <p class="before"><span>Before</span>You find out when a new starter can't get Office.</p>
+            <p class="after"><span>With EntraPlus</span>Amber on your dashboard while there's still time to order.</p>
+            <p class="detail">Only the licences you pay for, with how many are left, staff A1, A3 and A5 first.</p>
+          </li>
+        </ul>
+
+        <div class="calc" id="calc">
+          <div class="calc-inputs">
+            <h3>What's that worth to your team?</h3>
+            <div class="calc-row"><label for="c-techs">Technicians</label><input type="range" id="c-techs" name="techs" min="1" max="15" value="3"><output for="c-techs">3</output></div>
+            <div class="calc-row"><label for="c-changes">Starters and leavers a month</label><input type="range" id="c-changes" name="changes" min="0" max="60" value="8"><output for="c-changes">8</output></div>
+            <div class="calc-row"><label for="c-everyday">Password resets and unlocks a week</label><input type="range" id="c-everyday" name="everyday" min="0" max="100" value="20"><output for="c-everyday">20</output></div>
+            <div class="calc-row"><label for="c-lookups">BitLocker and LAPS lookups a week</label><input type="range" id="c-lookups" name="lookups" min="0" max="40" value="5"><output for="c-lookups">5</output></div>
+            <div class="calc-row"><label for="c-admin">Group, OU and device changes a week</label><input type="range" id="c-admin" name="admin" min="0" max="80" value="15"><output for="c-admin">15</output></div>
+            <div class="calc-row"><label for="c-rate">Cost of a technician's hour</label><input type="range" id="c-rate" name="rate" min="12" max="60" value="22"><output for="c-rate">£22</output></div>
+          </div>
+          <div class="calc-result" aria-live="polite">
+            <p class="calc-big"><strong id="calc-hours">146</strong> hours back a year</p>
+            <p class="calc-sub">That's about <strong id="calc-days">19</strong> working days, worth <strong id="calc-value">£3,212</strong> of your team's time.</p>
+            <p class="calc-sub">EntraPlus Pro for <span id="calc-techs">3 technicians</span>: <strong id="calc-cost">£720</strong> a year.</p>
+            <p class="calc-payback">Pays for itself in <strong id="calc-payback">41 days</strong></p>
+            <div class="cta-row">
+              <a class="btn btn-primary" href="#download">Download free</a>
+              <a class="btn" href="/features.html">See every feature</a>
+            </div>
+            <p class="hint">Estimates from the steps each job takes by hand. Move the sliders to match your school.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Safety -->
+    <section id="safety" class="band" aria-labelledby="safety-title">
+      <div class="wrap safety-grid">
+        <div class="section-head">
+          <h2 id="safety-title">Built not to break things</h2>
+          <p>Power tools in the hands of a busy technician need guard rails. These are on by default and can't be switched off.</p>
+        </div>
+        <ul class="guards">
+          <li><span class="risk" data-r="high"><i></i>High risk</span><div><h3>Type to confirm</h3><p>Deleting a user or group, retiring or wiping a device: you type its name first.</p></div></li>
+          <li><span class="risk" data-r="medium"><i></i>Medium risk</span><div><h3>Live status before you act</h3><p>Disabling someone re-checks whether they're enabled right now, so you can't flip the wrong way.</p></div></li>
+          <li><span class="risk" data-r="medium"><i></i>Policies</span><div><h3>Report-only policies</h3><p>Conditional Access templates are created in report-only mode with your own account excluded.</p></div></li>
+          <li><span class="badge">Always</span><div><h3>Nothing secret in the log</h3><p>Every change is logged with who made it. Passwords, BitLocker keys and LAPS passwords never are.</p></div></li>
+          <li><span class="badge">Always</span><div><h3>Your data never touches our servers</h3><p>The app talks straight to Microsoft and your own domain controllers. We see none of it.</p></div></li>
+          <li><span class="badge">Always</span><div><h3>Your role, not ours</h3><p>You sign in as yourself. EntraPlus can never do more than your Entra admin role allows.</p></div></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Screens -->
+    <section id="screens" aria-labelledby="screens-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="screens-title">A look around</h2>
+          <p>Light or dark, following your Windows setting. <a href="/features.html">See every feature in detail</a>.</p>
+        </div>
+        <div class="tabs" role="tablist" aria-label="Choose a screen">
+          <button role="tab" id="shot-tab-dashboard" aria-selected="true" aria-controls="shot-panel" data-shot="dark-dashboard" data-alt="Dashboard: user and device counts, licences running low, accounts locked out in Active Directory, and quick jobs">Dashboard</button>
+          <button role="tab" id="shot-tab-filters" aria-selected="false" aria-controls="shot-panel" data-shot="dark-filter" data-alt="Building a custom filter: Science staff who haven't signed in for 60 days, saved to use again" tabindex="-1">Filters</button>
+          <button role="tab" id="shot-tab-ad" aria-selected="false" aria-controls="shot-panel" data-shot="dark-ad-computers" data-alt="Active Directory computers filtered to those not seen for 90 days, with the OU tree and actions for the selected computer" tabindex="-1">Active Directory</button>
+          <button role="tab" id="shot-tab-devices" aria-selected="false" aria-controls="shot-panel" data-shot="dark-devices" data-alt="Intune devices filtered to those that aren't compliant, with details and actions for the selected laptop" tabindex="-1">Devices</button>
+          <button role="tab" id="shot-tab-apps" aria-selected="false" aria-controls="shot-panel" data-shot="dark-apps" data-alt="Applications: every enterprise app with who publishes it and when its secrets expire, one expiring in 11 days" tabindex="-1">Applications</button>
+          <button role="tab" id="shot-tab-light" aria-selected="false" aria-controls="shot-panel" data-shot="light-dashboard" data-alt="The dashboard in light mode" tabindex="-1">Light mode</button>
+        </div>
+        <div id="shot-panel" role="tabpanel" aria-labelledby="shot-tab-dashboard" tabindex="0">
+          <div class="window">
+            <div class="window-bar" aria-hidden="true"><span></span><span></span><span></span><b>EntraPlus</b></div>
+            <img id="shot-img" src="/assets/img/shots/dark-dashboard-1600.webp"
+                 srcset="/assets/img/shots/dark-dashboard-640.webp 640w, /assets/img/shots/dark-dashboard-960.webp 960w, /assets/img/shots/dark-dashboard-1600.webp 1600w"
+                 sizes="(min-width: 1240px) 1160px, 94vw" width="1600" height="1006" loading="lazy"
+                 alt="Dashboard: user and device counts, licences running low, accounts locked out in Active Directory, and quick jobs">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Roadmap -->
+    <section id="roadmap" class="band" aria-labelledby="roadmap-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="roadmap-title">Where the toolkit is heading</h2>
+          <p>EntraPlus is growing from a management app into a full engineering toolkit. Pro subscribers get each of these as it lands.</p>
+        </div>
+        <ul class="cards">
+          <li class="card"><span class="badge badge-next">Next up</span><h3>Scheduled reports</h3><p>Stale computers, locked-out staff or licences running low, emailed to you every Monday morning.</p></li>
+          <li class="card"><span class="badge badge-next">Next up</span><h3>Onboarding and offboarding templates</h3><p>Save a role once, such as Teacher or Sixth Form, with its groups, licence and OU, then apply it in one click.</p></li>
+          <li class="card"><span class="badge">Planned</span><h3>Permission analysis</h3><p>See who holds which admin roles, and where someone has more access than their job needs.</p></li>
+          <li class="card"><span class="badge">Planned</span><h3>Change impact preview</h3><p>Before you save, see which groups, licences, policies and devices the change will touch.</p></li>
+          <li class="card"><span class="badge">Planned</span><h3>Hybrid identity health</h3><p>Spot accounts that differ between AD and Entra, sync errors and orphaned objects.</p></li>
+          <li class="card"><span class="badge">Planned</span><h3>Audit templates</h3><p>Ready-made reports for leavers still active, stale devices and accounts without MFA.</p></li>
+          <li class="card"><span class="badge">Planned</span><h3>RBAC planning</h3><p>Design least-privilege roles for your team and check them before you assign them.</p></li>
+          <li class="card"><span class="badge">Exploring</span><h3>Operation definitions in JSON or YAML</h3><p>Describe bulk changes as a file, preview them, and keep them in version control.</p></li>
+        </ul>
+        <p class="aside">Something you'd use every week that isn't here? <a href="mailto:hello@entraplus.co.uk?subject=Toolkit%20idea">Tell us what to build next</a>.</p>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" aria-labelledby="pricing-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="pricing-title">Look things up for free. Make changes with Pro.</h2>
+          <p>One price per technician. No setup fees and no per-user charges, however big your school. Every new
+            organisation gets a <strong>free 30-day Pro trial</strong> for up to 5 technicians, with no card needed.</p>
+        </div>
+        <fieldset class="billing">
+          <legend class="sr-only">Billing period</legend>
+          <input type="radio" name="billing" id="bill-month" value="monthly">
+          <label for="bill-month">Monthly</label>
+          <input type="radio" name="billing" id="bill-year" value="yearly" checked>
+          <label for="bill-year">Yearly <span class="badge badge-pro">5 for £1,000</span></label>
+        </fieldset>
+        <div class="plans">
+          <article class="plan" aria-labelledby="plan-free">
+            <h3 id="plan-free">Free</h3>
+            <p class="price"><span class="amount">£0</span></p>
+            <p class="plan-note">Read-only, for as long as you like.</p>
+            <ul class="ticks">
+              <li>Look up any user: details, status, groups and licences</li>
+              <li>Browse groups and their members</li>
+              <li>Intune device list and compliance</li>
+              <li>Dashboard with licence counts</li>
+              <li>Filters and saved views</li>
+              <li>Export users, devices and group members to CSV</li>
+              <li>Nothing in your tenant can be changed</li>
+            </ul>
+            <a class="btn" href="#download">Download free</a>
+          </article>
+          <article class="plan plan-pro" aria-labelledby="plan-pro">
+            <h3 id="plan-pro">Pro</h3>
+            <p class="price" aria-live="polite">
+              <span class="amount" data-yearly="£240" data-monthly="£20">£240</span>
+              <span class="per" data-yearly="per technician a year, or 5 technicians for £1,000 (then £240 each)" data-monthly="per technician a month, cancel any time">per technician a year, or 5 technicians for £1,000 (then £240 each)</span>
+            </p>
+            <p class="plan-note">Everything in Free, plus:</p>
+            <ul class="ticks">
+              <li>Make changes: new users, edits, passwords, unlocks, groups and device sync</li>
+              <li>Hybrid Active Directory accounts and groups</li>
+              <li>Exchange: aliases, distribution lists, shared mailboxes</li>
+              <li>Licence management</li>
+              <li>One-click leaver</li>
+              <li>Bulk new starters from a spreadsheet</li>
+              <li>Restart, retire and wipe devices</li>
+              <li>BitLocker recovery keys and LAPS passwords</li>
+              <li>Policies and Applications, with Conditional Access templates</li>
+              <li>Advanced mode, with a manager deciding who gets it</li>
+              <li>Every new toolkit feature as it arrives</li>
+            </ul>
+            <a class="btn btn-primary" id="pro-cta" href="/register.html?plan=yearly">Start your free trial</a>
+            <p class="hint">30 days of Pro for up to 5 technicians. No card needed.</p>
+          </article>
+        </div>
+        <p class="plans-note">Prices exclude VAT. Your school pays per technician, never per pupil or member of staff.</p>
+      </div>
+    </section>
+
+    <!-- Download -->
+    <section id="download" class="band" aria-labelledby="download-title">
+      <div class="wrap download-grid">
+        <div>
+          <h2 id="download-title">Up and running in five minutes</h2>
+          <ol class="steps">
+            <li><h3>Download and install</h3><p>Install for everyone on the PC, or just for you with no admin rights needed.</p></li>
+            <li><h3>Sign in with your admin account</h3><p>Microsoft's own sign-in page opens in your browser. The first time, a Global Administrator approves EntraPlus once for your organisation.</p></li>
+            <li><h3>Search for someone</h3><p>Everything you can change is right there, with where it's saved and what it will do.</p></li>
+          </ol>
+          <div class="cta-row">
+            <a class="btn btn-primary" data-download="installer" href="#download">Download the installer</a>
+            <a class="btn" data-download="portable" href="#download">Portable zip</a>
+          </div>
+          <p class="aside">Windows 10 or 11, 64-bit. Nothing else to install.</p>
+        </div>
+        <div class="command-card">
+          <h3>Deploying to every IT laptop?</h3>
+          <p>Push it silently from Intune or your RMM tool:</p>
+          <div class="cmd">
+            <div class="cmd-head"><span class="mbadge" data-m="PS">PowerShell</span><button type="button" class="copy" data-copy-target="cmd-all">Copy</button></div>
+            <pre class="code" tabindex="0" aria-label="Install command for all users"><code id="cmd-all">.\EntraPlus-Setup.exe /VERYSILENT /ALLUSERS</code></pre>
+          </div>
+          <div class="cmd">
+            <div class="cmd-head"><span class="mbadge" data-m="PS">PowerShell</span><button type="button" class="copy" data-copy-target="cmd-user">Copy</button></div>
+            <pre class="code" tabindex="0" aria-label="Install command for the current user"><code id="cmd-user">.\EntraPlus-Setup.exe /VERYSILENT /CURRENTUSER</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" aria-labelledby="faq-title">
+      <div class="wrap faq-grid">
+        <div class="section-head">
+          <h2 id="faq-title">Questions</h2>
+          <p>Anything else? <a href="mailto:hello@entraplus.co.uk">hello@entraplus.co.uk</a></p>
+        </div>
+        <div class="faq">
+          <details>
+            <summary>Is EntraPlus free?</summary>
+            <p>Yes, to look things up. The Free plan is read-only with no time limit: look up users, groups, devices and licences, and export lists to CSV. Making changes needs Pro, at £20 a month or £240 a year per technician, or 5 technicians for £1,000 a year. Every new organisation gets a free 30-day Pro trial for up to 5 technicians, with no card needed.</p>
+          </details>
+          <details>
+            <summary>How does the free trial work?</summary>
+            <p>The first person from your school to sign in sets up your organisation and becomes its manager. Your organisation then gets 30 days of Pro for up to 5 technicians, with no card needed. The manager hands out the seats. Each organisation gets one trial. When it ends, the app carries on as the read-only Free plan until you choose a plan.</p>
+          </details>
+          <details>
+            <summary>Does my organisation's data go through your servers?</summary>
+            <p>No. The app runs on your PC and talks directly to Microsoft and your own domain controllers. Nothing about your users, devices or policies is sent to us. Your EntraPlus account only holds your name, email and subscription.</p>
+          </details>
+          <details>
+            <summary>What permissions does it need?</summary>
+            <p>You sign in with your own admin account, and EntraPlus can never do more than your Entra role allows. User Administrator covers users and groups, Intune Administrator covers devices. A Global Administrator approves the app's permissions once for the organisation. Extra permissions for Pro device and policy features are only requested the first time you use them.</p>
+          </details>
+          <details>
+            <summary>Does it work with on-premises Active Directory?</summary>
+            <p>Yes, with Pro, including from cloud-only laptops that aren't joined to the domain. EntraPlus connects to your domain controller over the network or VPN, detects accounts that sync from AD and saves their changes there.</p>
+          </details>
+          <details>
+            <summary>Do I need to install PowerShell modules?</summary>
+            <p>Not for users, groups, devices or policies. Those talk to Microsoft Graph directly. Exchange and Active Directory features need a module each, and EntraPlus installs them for you with one click.</p>
+          </details>
+          <details>
+            <summary>Can I cancel?</summary>
+            <p>Any time from your account page. Pro keeps working until the end of the period you've paid for, then the app carries on as the read-only Free plan.</p>
+          </details>
+          <details>
+            <summary>Is it only for schools?</summary>
+            <p>It was built in a school, so the language and defaults suit schools and trusts: academic-year expiry dates, education licences, staff and student groups. It works the same for any organisation on Microsoft 365.</p>
+          </details>
+          <details>
+            <summary>Is EntraPlus made by Microsoft?</summary>
+            <p>No. EntraPlus is an independent product and isn't affiliated with or endorsed by Microsoft.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <a class="brand" href="/" aria-label="EntraPlus home"><img src="/favicon.svg" width="28" height="28" alt=""><span>EntraPlus</span></a>
+        <p class="aside">Microsoft Entra, Intune, Exchange and Active Directory admin in one calm Windows app. Made in the UK by a school IT technician.</p>
+      </div>
+      <nav aria-label="Footer">
+        <ul>
+          <li><a href="/features.html">Features</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#time">Time saved</a></li>
+          <li><a href="#faq">Questions</a></li>
+          <li><a href="#download">Download</a></li>
+          <li><a href="/login.html">Sign in</a></li>
+          <li><a href="/privacy.html">Privacy and cookies</a></li>
+          <li><a href="mailto:hello@entraplus.co.uk">Contact</a></li>
+        </ul>
+      </nav>
+      <p class="legal">© <span id="year">2026</span> EntraPlus. EntraPlus is an independent product and is not affiliated with, endorsed by or sponsored by Microsoft. Microsoft, Microsoft 365, Microsoft Entra, Intune and Windows are trademarks of the Microsoft group of companies.</p>
+    </div>
+  </footer>
+
+  <div class="consent" id="consent" role="region" aria-label="Cookie choice" hidden>
+    <p>We'd like to use Google Analytics cookies to see which pages help people. Nothing loads unless you agree. <a href="/privacy.html">Privacy and cookies</a></p>
+    <div class="consent-actions">
+      <button type="button" class="btn btn-small" data-consent="denied">No thanks</button>
+      <button type="button" class="btn btn-primary btn-small" data-consent="granted">Allow analytics</button>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

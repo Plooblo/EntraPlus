@@ -1,0 +1,222 @@
+# EntraPlus accounts: Microsoft sign-in, organisations and billing
+
+This sets up the account system end to end:
+
+1. People sign in on entraplus.co.uk with their **Microsoft work or school account**. There are no passwords to manage.
+2. The first person from a Microsoft tenant **sets up the organisation** and becomes its **manager**.
+3. Anyone else from the same tenant who signs in **joins automatically as "waiting for approval"**. They appear in the manager's dashboard.
+4. The manager approves people, sets their **role** and decides who gets a **Pro seat**:
+   - **Manager:** billing and people.
+   - **Senior technician:** may use advanced mode.
+   - **Technician:** basic mode only.
+5. Only managers see the subscription, renewal or expiry date, prices and purchase history.
+6. A new organisation gets a free 30-day Pro trial for up to 5 technicians, once per Microsoft tenant (`update-trial.sql`). The manager then buys seats with **Stripe** (£20 per technician a month, or yearly at £240 per technician with 5 for £1,000). Seat changes, plan switches, card updates, invoices and cancelling all happen on Stripe's secure billing page.
+7. Anyone with a seat signs in to the **EntraPlus app** with the same account and Pro switches on automatically. Nobody sees, copies or types a licence key. Behind the scenes the server sends the app a signed pass for the seat, which expires 3 days after the paid period ends and is renewed automatically.
+
+The pieces:
+
+- **The website** stays on GitHub Pages.
+- **Supabase** handles Microsoft sign-in, the database and two small server functions.
+- **Stripe** takes the money.
+
+The website's demo mode lets you try every screen in a browser before any of this exists.
+
+What has been tested:
+
+- **The database:** the organisation rules were run against a real PostgreSQL database. That covered setting up, joining, approving, the seat limit, the always-one-manager rule, who can see billing, and seat reductions.
+- **The website:** every screen was clicked through in a browser with automated accessibility checks.
+- **Licence keys:** the key format matches the app; an earlier key produced by the same signing code was accepted by the desktop app.
+- **Not yet tested:** the parts that need your accounts. These are the Microsoft sign-in itself, the two server functions running on Supabase, and the Stripe webhook. Step 7 walks through testing them.
+
+---
+
+## Already done in Stripe (test mode, "EntraPlus sandbox")
+
+| What | ID |
+|---|---|
+| Product: EntraPlus Pro (unit: technician) | `prod_VPb5nkEPEuzFKF` |
+| Old monthly price: £15 per technician (archive once the new one is live) | `price_1UOltUFPvb7T5luTBx3oCxR7` |
+| Old yearly price: £120 per technician (archive once the new one is live) | `price_1UOltXFPvb7T5luTDe3NPAEL` |
+| New monthly price: £20 per technician | `price_1URKb4FPvb7T5luTrjbq43Kz` (lookup key `entraplus_pro_monthly_2026`) |
+| New yearly price: graduated tiers 1-4 at £240, 5th at £40, 6+ at £240 | `price_1URKb5FPvb7T5luTHsQqM0iw` (lookup key `entraplus_pro_yearly_2026`) |
+| New monthly payment link (1 to 100 seats, starts at 1) | https://buy.stripe.com/test_9B67sL3JDdZ09BWg0w7Vm02 |
+| New yearly payment link (1 to 100 seats, starts at 5) | https://buy.stripe.com/test_14AbJ1cg99IKeWg29G7Vm03 |
+| Old monthly payment link (switched off) | https://buy.stripe.com/test_bJeaEXeoh2gi9BWg0w7Vm00 |
+| Old yearly payment link (switched off) | https://buy.stripe.com/test_3cI00j4NHf34cO801y7Vm01 |
+| Customer portal (seats, plan switch, card, invoices, cancel at period end) | `bpc_1UOluSFPvb7T5luT6MPpOeuD` |
+| Portal sign-in link | https://billing.stripe.com/p/login/test_bJeaEXeoh2gi9BWg0w7Vm00 |
+
+These links are already in `assets/js/config.js`. After payment, Stripe sends people back to `/account.html?paid=1`.
+
+**Two things to confirm before going live:**
+
+- **Stripe Managed Payments is switched on.** Stripe acts as the seller of record and handles VAT and sales tax worldwide, which saves you registering for VAT in other countries. Fees are higher than standard Stripe, and invoices are issued by Stripe. If you'd rather be the seller yourself, turn it off in Stripe under Settings > Managed Payments and use Stripe Tax instead. Talk to your accountant either way.
+- **The product's tax category is "SaaS: electronic download, business use"** (`txcd_10103101`). That's the closest match for a subscription with a downloaded app sold to organisations. The other candidate is "Downloadable software: business use" (`txcd_10202003`). This is a tax classification decision, so confirm it with your accountant; it can be changed on the product at any time.
+
+---
+
+## 1. Register EntraPlus in Microsoft Entra
+
+Use the **same** app registration as the desktop app, so customers only ever approve "EntraPlus" once.
+
+1. Go to entra.microsoft.com > **App registrations** > **New registration** (or open the existing EntraPlus one).
+   - **Name:** EntraPlus
+   - **Supported account types:** *Accounts in any organizational directory (multitenant)*
+2. Open **Authentication** > **Add a platform** > **Web**. The redirect URI is
+   `https://YOUR-PROJECT.supabase.co/auth/v1/callback`
+   (Supabase shows the exact URL on its Azure provider page.) The desktop app's "Mobile and desktop" platform stays as it is.
+3. Open **Certificates & secrets** > **New client secret**. Copy the **Value**, not the Secret ID. Note the expiry date in your calendar, because sign-in breaks when it expires. EntraPlus's own Applications page will show it in amber as it gets close.
+4. Open **Token configuration** > **Add optional claim** > **ID**. Tick `email` and `xms_edov`, and accept the prompt to add the Graph `email` permission. Supabase needs Microsoft to send a verified email address, and `xms_edov` is how Microsoft says the email domain has been verified.
+5. Open **API permissions**. You need `openid`, `profile`, `email` and `User.Read`, all delegated.
+6. Recommended: complete **Branding & properties** > **Publisher verification** with your Microsoft Partner (MPN) ID. Schools see "EntraPlus, verified" instead of "unverified", and many tenants only allow users to approve verified apps.
+
+**Schools that block users approving apps.** Many school tenants only let admins approve apps. Their IT admin approves once for everyone by opening this link and signing in as an admin:
+`https://login.microsoftonline.com/organizations/adminconsent?client_id=YOUR-CLIENT-ID`
+It's worth putting that link in your onboarding email or FAQ.
+
+## 2. Supabase project
+
+1. Create a project at supabase.com and choose a London region.
+2. **Authentication > Sign In / Providers > Azure:** switch it on.
+   - Paste the **client ID** and **secret value** from step 1.
+   - Set **Azure Tenant URL** to `https://login.microsoftonline.com/organizations`. This lets in any work or school account and keeps personal Microsoft accounts out.
+3. In the same section, switch **off** the Email provider, so nobody can create a password account.
+4. **Authentication > URL Configuration:**
+   - **Site URL:** `https://entraplus.co.uk`
+   - **Redirect URLs:** `https://entraplus.co.uk/account.html` and `https://entraplus.co.uk/app-signin.html`. For testing on your PC, add `http://localhost:8000/account.html` and `http://localhost:8000/app-signin.html` too.
+5. **SQL Editor:** paste in `supabase/schema.sql` and run it.
+6. **Project Settings > API:** copy the project URL and the publishable (anon) key into `assets/js/config.js`:
+   ```js
+   auth: { mode: "supabase", supabaseUrl: "https://YOUR-PROJECT.supabase.co", supabaseAnonKey: "sb_publishable_..." }
+   ```
+   This key is designed to be public. The database rules stop anyone seeing another organisation, and stop technicians seeing billing.
+
+**One-minute check after your first sign-in.** The database works out each person's organisation from their Microsoft tenant ID, which Supabase stores from Microsoft's verified sign-in. Sign in once, then run this in the SQL Editor:
+
+```sql
+select email, raw_user_meta_data -> 'custom_claims' ->> 'tid' as tid_1, raw_user_meta_data ->> 'iss' as iss
+from auth.users order by created_at desc limit 1;
+```
+
+One of those columns should contain your tenant ID (Entra admin centre > Overview > Tenant ID). The schema checks both, plus the same fields in `auth.identities`. If neither has it, tell me what the row contains and I'll adjust `my_tenant()`.
+
+## 3. Server functions
+
+You need the Supabase CLI (`npm i -g supabase`, or see supabase.com/docs/guides/cli). From this `backend` folder:
+
+```bash
+supabase login
+supabase link --project-ref YOUR-PROJECT-REF
+
+supabase secrets set STRIPE_SECRET_KEY=sk_test_...          # Stripe > Developers > API keys (sandbox)
+supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_...        # from step 4
+supabase secrets set SITE_ORIGIN=https://entraplus.co.uk
+# The signing key is ONE line: get it with  python tools/licence_tool.py server-secret  (in the EntraPlus folder),
+# then paste it in Supabase > Edge Functions > Secrets as LICENCE_PRIVATE_KEY (easier than the command line on Windows).
+
+supabase functions deploy stripe-webhook --no-verify-jwt   # Stripe calls this, so it checks Stripe's signature instead
+supabase functions deploy billing-portal                   # managers' billing buttons (signed-in only)
+supabase functions deploy app-auth --no-verify-jwt         # the desktop app's sign-in (it checks sessions itself)
+```
+
+`LICENCE_PRIVATE_KEY` must be the private half of the key pair built into the app. Check they match any time with `python tools/licence_tool.py status`, which compares the app, your private key file and the live server. If you deployed an earlier version with `member-licence`, you can delete that function: nothing uses it now.
+
+## 4. Stripe webhook
+
+Stripe > Developers > **Webhooks** > Add endpoint (in the sandbox):
+
+- **URL:** `https://YOUR-PROJECT.supabase.co/functions/v1/stripe-webhook`
+- **Events:**
+  - `checkout.session.completed`
+  - `customer.subscription.created`
+  - `customer.subscription.updated`
+  - `customer.subscription.deleted`
+  - `invoice.paid`
+  - `invoice.payment_failed`
+
+Copy the signing secret (`whsec_...`) into step 3 and redeploy the webhook. I can create this endpoint through the Stripe connector once you know your Supabase project address.
+
+How purchases find the right organisation: the account page adds the organisation's ID to the payment link (`client_reference_id`). The webhook saves it on the subscription, so every later event (renewals, seat changes in the portal, cancellations) finds the organisation too.
+
+## 5. Publish the website
+
+Commit and push the site as usual. `config.js` now has the Stripe test links and your Supabase details.
+
+## 6. What people see
+
+- **Not signed in:** "Sign in with Microsoft" (or "Continue with Microsoft" on the register page).
+- **First from their organisation:** they name the organisation and become its manager.
+- **Colleague:** "Waiting for approval: ask *Jack Taylor* to approve you."
+- **Technician or senior technician:** their role, whether they have a seat, and the PCs they're signed in on. There's no billing information at all.
+- **Manager**, in addition:
+  - **Subscription:** plan, seats, price per seat, total, and the renewal or end date. Buy buttons if there's no plan yet. Otherwise **Change seats or plan**, **Billing details and invoices** and **Cancel subscription**, which open Stripe's billing page already signed in. After cancelling, the page shows the end date and a **Keep my subscription** button.
+  - **People:** approve or decline, role, a Pro seat switch, and remove. The seat limit and the always-one-manager rule are enforced by the database, not just the page.
+  - **Purchase history:** date, invoice number with link and PDF, seats, amount and status.
+
+When a manager reduces seats in Stripe, seats are taken back automatically. Managers keep theirs first, then the longest-standing technicians. When a subscription starts, the manager gets a seat automatically.
+
+## 7. Test it end to end (sandbox)
+
+1. Sign in with your work account and set up your organisation.
+2. Ask a colleague to sign in, or use a second account in your tenant. They show as waiting in your People list.
+3. Click **Yearly**, choose 2 seats, and pay with the test card `4242 4242 4242 4242` (any future date, any CVC).
+4. Back on the account page, the subscription shows "yearly for 2 technicians" and you have a seat. Open the app, sign in with the same account, and Pro switches on.
+5. Approve your colleague, make them a senior technician and give them the second seat. A third seat should be refused.
+6. **Change seats or plan:** reduce to 1 seat in Stripe's portal. Your colleague loses their seat and you keep yours.
+7. Check Purchase history shows the invoice.
+
+If something doesn't update:
+- **Stripe > Webhooks** shows every delivery and the function's reply.
+- **Supabase > Edge Functions > Logs** shows any errors.
+
+## 8. Going live
+
+1. Finish activating your Stripe account (business details, bank account).
+2. Recreate the product, both prices, both payment links and the portal in **live mode**. I can do this through the Stripe connector once a live account is connected, using the same settings as the sandbox.
+3. Add a live webhook endpoint, then set the live `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` secrets.
+4. Put the live links in `config.js`.
+
+## Invites
+
+Managers can invite colleagues from **People** on their dashboard. An invite skips "waiting for approval" and sets the
+person's role, but it never lets an outsider in:
+
+- **Domain rule:** only addresses at the organisation's own email domains are accepted. These are the domains its
+  active members signed in with through Microsoft. Anything else is refused.
+- **Tenant rule:** joining still needs a Microsoft sign-in from the organisation's tenant, so a forwarded invite is
+  useless to anyone else.
+- **Already waiting:** inviting someone who's already waiting simply approves them.
+- **Expiry:** invites last 30 days, and managers can resend or cancel them.
+
+**Set up:**
+1. Run `supabase/update-invites.sql`. It's already in `schema.sql` for new installs.
+2. Deploy the function: `supabase functions deploy invite`
+3. **Optional, to send real emails:**
+   1. Sign up at resend.com (it has a free tier).
+   2. Add and verify `entraplus.co.uk` as a sending domain. Resend gives you DNS records to add.
+   3. Create an API key, then add these Supabase secrets:
+      - `RESEND_API_KEY`: the key
+      - `INVITE_FROM`: `EntraPlus <invites@entraplus.co.uk>`
+
+   Until then, managers get a **Copy invite link** button to send the link themselves.
+
+## The desktop app's sign-in
+
+The app's **Sign in** button (in the sidebar, and under Settings > Your EntraPlus account) works like this:
+
+1. The app opens `entraplus.co.uk/app-signin.html` in the browser. If the person is already signed in on the website, they just confirm with **Continue to the app**; otherwise they sign in with Microsoft first.
+2. The browser hands a one-time code back to the app, which only listens on `127.0.0.1`.
+3. The app swaps the code for its own session, and receives the person's profile and a signed pass for their seat. Pro switches on automatically if they have one.
+4. The app refreshes all of this on start-up and every 6 hours. If the manager removes the seat, changes the role or the subscription ends, the app follows at the next refresh.
+5. **Advanced mode** follows the person's role: managers and senior technicians may use it; technicians can't, whatever the PC's setting.
+
+**How the sign-in is protected:**
+- **Codes:** one-time, valid for 5 minutes, and only usable by the app that started the sign-in (PKCE).
+- **The session token:** stored on the PC encrypted for that Windows user (DPAPI). The server only keeps a scrambled (hashed) copy.
+- **Signing out:** people can sign any PC out from their account page.
+
+**Tested:** the sign-in was run end to end with the real `app-auth` function and the real app code, using an in-memory stand-in for the database. That covered the happy path, a reused code, a wrong verifier, a missing website session, a wrong state, a seat removed and given back, and sign-out ending the session.
+
+**Not yet tested:** the Windows encryption step, which can only run on Windows. If it ever fails on a PC, the app reports it rather than saving the session unprotected.
+
+Licence keys pasted by hand still work, for offline or locked-down PCs. A key from the signed-in account takes precedence while signed in.

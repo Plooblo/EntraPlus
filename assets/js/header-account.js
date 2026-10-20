@@ -51,17 +51,29 @@
 
   function fetchState(p) {
     if (p.demo) return Promise.resolve(demoState(p));
-    if (!p.token || p.expires < Date.now()) return Promise.resolve(null);      // the account page refreshes it
+    if (!p.token || p.expires < Date.now()) return Promise.resolve(null);
     return fetch(cfg.supabaseUrl + "/rest/v1/rpc/account_state", {
       method: "POST", body: "{}",
       headers: { "Content-Type": "application/json", apikey: cfg.supabaseAnonKey, Authorization: "Bearer " + p.token }
     }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
   }
 
+  // The sign-in token only lasts an hour and only the account pages renew it, so remember the last status we saw.
+  // Otherwise the gold Pro ring and status line vanish on every other page an hour after signing in.
+  function cacheKey(p) { return "ep-chip-state:" + (p.id || p.email); }
+  function cached(p) {
+    try { return JSON.parse(localStorage.getItem(cacheKey(p)) || "null"); } catch (e) { return null; }
+  }
+  function remember(p, state) {
+    try { localStorage.setItem(cacheKey(p), JSON.stringify(state)); } catch (e) { /* private window: fine */ }
+  }
+
   function apply() {
     var p = session(), actions = document.querySelector(".header-actions");
     if (!p || !actions || document.querySelector(".account-chip")) return;
-    document.querySelectorAll('a[href="/login.html"]').forEach(function (a) { (a.closest("li") || a).hidden = true; });
+    document.querySelectorAll('.site-nav a[href="/login.html"], .site-footer a[href="/login.html"]').forEach(function (a) {
+      (a.closest("li") || a).hidden = true;
+    });
 
     var a = document.createElement("a");
     a.className = "account-chip";
@@ -91,11 +103,22 @@
     a.appendChild(text);
     actions.insertBefore(a, actions.querySelector(".menu-btn") || null);
 
-    fetchState(p).then(function (state) {
+    function show(state) {
       var words = describe(state);
       status.textContent = words;
       a.classList.toggle("is-pro", /^Pro/.test(words));
-    });
+    }
+    var last = cached(p);
+    if (last) show(last);
+
+    var tries = 0;
+    (function check() {
+      fetchState(p).then(function (state) {
+        if (state) { remember(p, state); show(state); return; }
+        // Token expired: the account pages renew it within a few seconds of loading, so look again briefly.
+        if (document.querySelector('script[src*="/auth.js"]') && tries++ < 10) { setTimeout(function () { p = session() || p; check(); }, 1000); }
+      });
+    })();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", apply); else apply();

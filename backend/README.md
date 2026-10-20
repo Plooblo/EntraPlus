@@ -41,8 +41,8 @@ What has been tested:
 | New yearly price: graduated tiers 1-4 at £240, 5th at £40, 6+ at £240 | `price_1URKb5FPvb7T5luTHsQqM0iw` (lookup key `entraplus_pro_yearly_2026`) |
 | New monthly payment link (1 to 100 seats, starts at 1) | https://buy.stripe.com/test_9B67sL3JDdZ09BWg0w7Vm02 |
 | New yearly payment link (1 to 100 seats, starts at 5) | https://buy.stripe.com/test_14AbJ1cg99IKeWg29G7Vm03 |
-| Old monthly payment link | https://buy.stripe.com/test_bJeaEXeoh2gi9BWg0w7Vm00 |
-| Old yearly payment link | https://buy.stripe.com/test_3cI00j4NHf34cO801y7Vm01 |
+| Old monthly payment link (switched off) | https://buy.stripe.com/test_bJeaEXeoh2gi9BWg0w7Vm00 |
+| Old yearly payment link (switched off) | https://buy.stripe.com/test_3cI00j4NHf34cO801y7Vm01 |
 | Customer portal (seats, plan switch, card, invoices, cancel at period end) | `bpc_1UOluSFPvb7T5luT6MPpOeuD` |
 | Portal sign-in link | https://billing.stripe.com/p/login/test_bJeaEXeoh2gi9BWg0w7Vm00 |
 

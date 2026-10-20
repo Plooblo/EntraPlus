@@ -31,11 +31,25 @@
   <a class="skip" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="wrap header-row">
-      <a class="brand" href="/" aria-label="EntraPlus home"><img src="/favicon.svg" width="32" height="32" alt=""><span>EntraPlus</span></a>
+      <a class="brand" href="/" aria-label="EntraPlus home">
+        <img src="/favicon.svg" width="32" height="32" alt="">
+        <span>EntraPlus</span>
+      </a>
+      <nav class="site-nav" id="site-nav" aria-label="Main">
+        <a href="/features.html">Features</a>
+        <a href="/#time">Time saved</a>
+        <a href="/#pricing">Pricing</a>
+        <a href="/#faq">Questions</a>
+        <a href="/login.html" class="nav-login">Sign in</a>
+      </nav>
       <div class="header-actions">
         <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch to light mode">
           <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
           <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
+        </button>
+        <a class="btn btn-primary btn-small" href="/#download">Download free</a>
+        <button class="icon-btn menu-btn" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
         </button>
       </div>
     </div>
@@ -45,9 +59,25 @@
     <p class="muted">The link may be old, or the address mistyped.</p>
     <p class="cta-row"><a class="btn btn-primary" href="/">Go to the EntraPlus home page</a></p>
   </main>
-  <footer class="site-footer site-footer-small">
-    <div class="wrap">
-      <p class="legal">© 2026 EntraPlus. EntraPlus is an independent product and is not affiliated with, endorsed by or sponsored by Microsoft. <a href="/privacy.html">Privacy and cookies</a></p>
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <a class="brand" href="/" aria-label="EntraPlus home"><img src="/favicon.svg" width="28" height="28" alt=""><span>EntraPlus</span></a>
+        <p class="aside">Microsoft Entra, Intune, Exchange and Active Directory admin in one calm Windows app. Made in the UK by a school IT technician.</p>
+      </div>
+      <nav aria-label="Footer">
+        <ul>
+          <li><a href="/features.html">Features</a></li>
+          <li><a href="/#pricing">Pricing</a></li>
+          <li><a href="/#time">Time saved</a></li>
+          <li><a href="/#faq">Questions</a></li>
+          <li><a href="/#download">Download</a></li>
+          <li><a href="/login.html">Sign in</a></li>
+          <li><a href="/privacy.html">Privacy and cookies</a></li>
+          <li><a href="mailto:hello@entraplus.co.uk">Contact</a></li>
+        </ul>
+      </nav>
+      <p class="legal">© <span id="year">2026</span> EntraPlus. EntraPlus is an independent product and is not affiliated with, endorsed by or sponsored by Microsoft. Microsoft, Microsoft 365, Microsoft Entra, Intune and Windows are trademarks of the Microsoft group of companies.</p>
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>

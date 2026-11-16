@@ -15,7 +15,7 @@ window.TOOLKIT = [
   "area": "Users",
   "plan": "Pro",
   "summary": "Name, username, domain, job title and a temporary password in one form. The sign-in name is built for you so it can't be mistyped.",
-  "mins": 12
+  "mins": 10
  },
  {
   "id": "edit-details",
@@ -70,7 +70,7 @@ window.TOOLKIT = [
   "title": "Restore a deleted user",
   "area": "Users",
   "plan": "Pro",
-  "summary": "Lists deleted accounts from Entra (and AD with Pro) and brings one back.",
+  "summary": "Lists deleted accounts from Entra, and from AD if its Recycle Bin is on, and brings one back.",
   "mins": 8
  },
  {
@@ -142,7 +142,7 @@ window.TOOLKIT = [
   "title": "Distribution lists",
   "area": "Groups",
   "plan": "Pro",
-  "summary": "Create lists and change their members. Graph can't edit these, so EntraPlus uses Exchange Online for you.",
+  "summary": "Create distribution lists and change who's on them, from the same window as other groups.",
   "mins": 8
  },
  {
@@ -221,7 +221,7 @@ window.TOOLKIT = [
   "id": "ca-view",
   "title": "Read Conditional Access in plain English",
   "area": "Policies",
-  "plan": "Free",
+  "plan": "Pro",
   "summary": "Each policy summarised: who it applies to, which apps, and what it does.",
   "mins": 10
  },
@@ -245,7 +245,7 @@ window.TOOLKIT = [
   "id": "compliance",
   "title": "View device compliance policies",
   "area": "Policies",
-  "plan": "Free",
+  "plan": "Pro",
   "summary": "The rules your devices are measured against, in one list.",
   "mins": 10
  },

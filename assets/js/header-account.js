@@ -1,4 +1,4 @@
-/* Signed in? Replace "Log in" with your photo (or initials), name and licence status, linking to your dashboard.
+/* Signed in? Replace "Sign in" with your photo (or initials), name and licence status, linking to your dashboard.
    Reads the saved sign-in directly and asks the database for your status with one small request, so it doesn't
    load the Supabase library on every page. The photo is fetched from Microsoft once at sign-in and kept locally. */
 (function () {
@@ -74,6 +74,9 @@
     document.querySelectorAll('.site-nav a[href="/login.html"], .site-footer a[href="/login.html"]').forEach(function (a) {
       (a.closest("li") || a).hidden = true;
     });
+    // the header's trial button becomes a way back to the account page
+    var cta = document.querySelector(".header-cta");
+    if (cta) { cta.textContent = "Your account"; cta.href = "/account.html"; }
 
     var a = document.createElement("a");
     a.className = "account-chip";

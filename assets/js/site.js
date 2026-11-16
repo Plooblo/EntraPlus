@@ -55,12 +55,11 @@
     copyText(text, b);
   });
 
-  /* ---------- tiny PowerShell / HTTP highlighter ---------- */
+  /* ---------- tiny PowerShell highlighter ---------- */
   function highlight(code) {
     return code.split("\n").map(function (line) {
       var html = esc(line);
-      if (/^\s*#/.test(line) || /^\s*\(/.test(line)) return '<span class="c-dim">' + html + "</span>";
-      html = html.replace(/^(GET|POST|PATCH|DELETE)\b/, '<span class="c-verb">$1</span>');
+      if (/^\s*#/.test(line)) return '<span class="c-dim">' + html + "</span>";
       html = html.replace(/(&quot;.*?&quot;|&#39;.*?&#39;)/g, '<span class="c-str">$1</span>');
       html = html.replace(/(^|[\s(|{;])([A-Z][a-z]+-[A-Za-z]+)(?=[\s`]|$)/g, '$1<span class="c-cmd">$2</span>');
       html = html.replace(/(\s)(-[A-Za-z]+)(?=[\s:]|$)/g, '$1<span class="c-param">$2</span>');
@@ -87,14 +86,26 @@
   }
   var menuBtn = $(".menu-btn"), nav = $("#site-nav");
   if (menuBtn && nav) {
-    menuBtn.addEventListener("click", function () {
-      var open = nav.classList.toggle("open");
+    var setMenu = function (open, refocus) {
+      nav.classList.toggle("open", open);
       menuBtn.setAttribute("aria-expanded", String(open));
       menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      if (refocus) menuBtn.focus();
+    };
+    menuBtn.addEventListener("click", function () { setMenu(!nav.classList.contains("open")); });
+    nav.addEventListener("click", function (e) { if (e.target.closest("a")) setMenu(false); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && nav.classList.contains("open")) setMenu(false, true);
     });
-    nav.addEventListener("click", function (e) {
-      if (e.target.closest("a")) { nav.classList.remove("open"); menuBtn.setAttribute("aria-expanded", "false"); }
+    document.addEventListener("click", function (e) {
+      if (nav.classList.contains("open") && !nav.contains(e.target) && !menuBtn.contains(e.target)) setMenu(false);
     });
+  }
+  var header = $(".site-header");
+  if (header) {
+    var onScroll = function () { header.classList.toggle("is-scrolled", scrollY > 8); };
+    addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
   }
   var year = $("#year");
   if (year) year.textContent = new Date().getFullYear();
@@ -174,49 +185,65 @@
   function metaHTML(it) {
     return '<span class="r-area">' + esc(it.area === "Hybrid AD" ? "Active Directory" : it.area) + "</span>" +
       '<span class="r-saves">Saves about ' + it.mins + " min</span>" +
-      '<span class="plan-badge" data-plan="' + it.plan + '">' + it.plan + "</span>";
+      '<span class="badge' + (it.plan === "Pro" ? " badge-pro" : "") + '">' + esc(it.plan) + "</span>";
   }
-  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  // each result opens the matching part of the features page
+  var FEATURE_ANCHORS = { Users: "people", Exchange: "exchange", Groups: "groups", Devices: "devices",
+                          Policies: "apps-policies", "Hybrid AD": "active-directory" };
+  function featureHref(it) { return "/features.html#" + (FEATURE_ANCHORS[it.area] || "find-report"); }
 
-  /* ---------- hero: live toolkit search ---------- */
-  var heroQ = $("#hero-q"), heroList = $("#hero-results");
-  function renderHero(q, animate) {
-    if (!heroList) return;
-    var results = search(q).slice(0, 3);
-    if (!q.trim()) results = ["leaver", "bitlocker", "disable"].map(function (id) { return byId(id); });
+  /* ---------- job search (in "Time back") ---------- */
+  var jobQ = $("#job-q"), jobList = $("#job-results"), jobStatus = $("#job-status"), statusTimer;
+  function byId(id) { for (var i = 0; i < TOOLKIT.length; i++) if (TOOLKIT[i].id === id) return TOOLKIT[i]; }
+  function renderJobs(q, animate) {
+    var results = q.trim() ? search(q).slice(0, 3) : ["leaver", "bitlocker", "disable"].map(byId).filter(Boolean);
     if (!results.length) {
-      heroList.innerHTML = '<li class="console-empty">Nothing matches that yet. Try “password”, “group” or “wipe”.</li>';
-      return;
+      jobList.innerHTML = '<li class="empty">Nothing matches that yet. Try “password”, “group” or “wipe”.</li>';
+      return 0;
     }
-    heroList.innerHTML = results.map(function (it) {
-      return '<li' + (animate ? ' class="enter"' : "") + '><button type="button" data-id="' + it.id + '">' +
-        '<span class="r-title">' + esc(it.title) + "</span>" +
-        '<span class="r-meta">' + metaHTML(it) + "</span></button></li>";
+    jobList.innerHTML = results.map(function (it) {
+      return "<li" + (animate ? ' class="enter"' : "") + '><a href="' + featureHref(it) + '">' +
+        '<span class="r-title">' + markText(it.title, q) + "</span>" +
+        '<span class="r-meta">' + metaHTML(it) + "</span></a></li>";
     }).join("");
     if (animate) {
-      $$("li.enter", heroList).forEach(function (li, i) {
+      $$("li.enter", jobList).forEach(function (li, i) {
         setTimeout(function () { li.classList.remove("enter"); }, 60 + i * 90);
       });
     }
+    return results.length;
   }
-  function byId(id) { for (var i = 0; i < TOOLKIT.length; i++) if (TOOLKIT[i].id === id) return TOOLKIT[i]; }
-  if (heroQ) {
-    renderHero("", false);
-    heroQ.addEventListener("input", function () { typing = false; renderHero(heroQ.value, false); });
-    heroList.addEventListener("click", function (e) {
-      var b = e.target.closest("button[data-id]");
-      if (b) openInExplorer(b.getAttribute("data-id"));
+  if (jobQ && jobList) {
+    var typing = false, touched = false;
+    renderJobs("", false);
+    jobQ.addEventListener("input", function () {
+      typing = false; touched = true;
+      var n = renderJobs(jobQ.value, false);
+      // announce once the person stops typing; the demo never fires "input", so it is never announced
+      clearTimeout(statusTimer);
+      statusTimer = setTimeout(function () {
+        if (jobStatus) jobStatus.textContent = n ? n + (n === 1 ? " result" : " results") : "No results";
+      }, 400);
     });
-    // The page's one orchestrated moment: type a real search, once.
-    var typing = !reduceMotion;
-    if (typing) {
-      var demo = "leaver", i = 0;
-      setTimeout(function step() {
-        if (!typing || document.activeElement === heroQ) return;
-        heroQ.value = demo.slice(0, ++i);
-        renderHero(heroQ.value, i === demo.length);
-        if (i < demo.length) setTimeout(step, 95);
-      }, 900);
+    ["pointerdown", "keydown", "focusin"].forEach(function (ev) {
+      jobQ.closest("[role=search]").addEventListener(ev, function () { typing = false; touched = true; });
+    });
+    // Type one real search, once, when the box first comes into view. Stops for good on any interaction.
+    if (!reduceMotion && "IntersectionObserver" in window) {
+      var jio = new IntersectionObserver(function (entries) {
+        if (!entries[0].isIntersecting) return;
+        jio.disconnect();
+        if (touched) return;
+        typing = true;
+        var demo = "leaver", i = 0;
+        setTimeout(function step() {
+          if (!typing) return;
+          jobQ.value = demo.slice(0, ++i);
+          renderJobs(jobQ.value, i === demo.length);
+          if (i < demo.length) setTimeout(step, 95); else typing = false;
+        }, 600);
+      }, { threshold: .6 });
+      jio.observe(jobQ);
     }
   }
 
@@ -293,7 +320,10 @@
     var range = $(".compare-range", compare);
     var img = $("#compare-img"), code = $("#compare-code");
     var setPos = function (v) { compare.style.setProperty("--pos", v + "%"); };
-    range.addEventListener("input", function () { setPos(range.value); });
+    range.addEventListener("input", function () {
+      setPos(range.value);
+      range.setAttribute("aria-valuetext", (100 - range.value) + "% EntraPlus showing");
+    });
     function showJob(key) {
       var job = JOBS[key];
       code.innerHTML = highlight(job.code.join("\n"));
@@ -329,14 +359,6 @@
     }
   }
 
-  /* ---------- hero results open the matching part of the features page ---------- */
-  var FEATURE_ANCHORS = { Users: "people", Exchange: "people", Groups: "groups", Devices: "devices",
-                          Policies: "apps-policies", "Hybrid AD": "active-directory" };
-  function openInExplorer(id) {
-    var it = byId(id);
-    location.href = "/features.html#" + (it && FEATURE_ANCHORS[it.area] || "dashboard");
-  }
-
   /* ---------- savings calculator ---------- */
   var calc = $("#calc");
   if (calc) {
@@ -348,6 +370,7 @@
         v[r.name] = Number(r.value);
         var out = $('output[for="' + r.id + '"]', calc);
         if (out) out.textContent = r.name === "rate" ? "£" + r.value : r.value;
+        if (r.name === "rate") r.setAttribute("aria-valuetext", "£" + r.value + " an hour");
       });
       var minutes = v.changes * MIN.change * 12 + (v.everyday * MIN.everyday + v.lookups * MIN.lookup + v.admin * MIN.admin) * 52;
       // Yearly price: £240 per technician, but the first 5 together are £1,000.
@@ -361,18 +384,31 @@
       $("#calc-payback").textContent = !payback ? "–" : payback <= 31 ? payback + " day" + (payback === 1 ? "" : "s")
         : payback <= 365 ? Math.round(payback / 7) + " weeks" : "over a year";
     };
-    calc.addEventListener("input", update);
+    var calcStatus = $("#calc-status"), calcTimer;
+    calc.addEventListener("input", function () {
+      update();
+      clearTimeout(calcTimer);
+      calcTimer = setTimeout(function () {
+        if (calcStatus) calcStatus.textContent = $("#calc-hours").textContent + " hours back a year. Pays for itself in " +
+          $("#calc-payback").textContent + ".";
+      }, 400);
+    });
     update();
   }
 
   /* ---------- screens gallery ---------- */
   var shotList = $('#screens [role="tablist"]');
   if (shotList) {
+    var shot = $("#shot-img"), caption = $("#shot-caption");
+    shot.addEventListener("load", function () { shot.classList.remove("is-loading"); });
     setupTabs(shotList, function (tab) {
-      var img = $("#shot-img"), name = tab.getAttribute("data-shot");
-      img.src = "/assets/img/shots/" + name + "-1600.webp";
-      img.srcset = "/assets/img/shots/" + name + "-640.webp 640w, /assets/img/shots/" + name + "-960.webp 960w, /assets/img/shots/" + name + "-1600.webp 1600w";
-      img.alt = tab.getAttribute("data-alt");
+      var name = tab.getAttribute("data-shot");
+      shot.classList.add("is-loading");
+      shot.srcset = "/assets/img/shots/" + name + "-640.webp 640w, /assets/img/shots/" + name + "-960.webp 960w, /assets/img/shots/" + name + "-1600.webp 1600w";
+      shot.src = "/assets/img/shots/" + name + "-1600.webp";
+      shot.alt = tab.getAttribute("data-alt");
+      if (caption) caption.textContent = tab.getAttribute("data-caption") || "";
+      if (shot.complete) shot.classList.remove("is-loading");
     });
   }
 
@@ -422,6 +458,43 @@
     try { localStorage.removeItem("ep-consent"); } catch (e) {}
     location.reload();
   };
+  // privacy page: the button only shows when analytics is switched on and the banner is on the page
+  var resetBtn = $("[data-consent-reset]");
+  if (resetBtn && CONFIG.gaId && banner) {
+    resetBtn.hidden = false;
+    resetBtn.addEventListener("click", window.epResetConsent);
+  }
 
-  window.epHighlight = highlight;
+  /* ---------- features page: mark the chip for the group in view ---------- */
+  var jump = $(".jump");
+  if (jump && "IntersectionObserver" in window) {
+    var chips = {};
+    $$("a", jump).forEach(function (a) { chips[a.hash.slice(1)] = a; });
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        $$("a", jump).forEach(function (a) { a.removeAttribute("aria-current"); });
+        var chip = chips[en.target.id];
+        chip.setAttribute("aria-current", "true");
+        chip.parentNode.parentNode.scrollTo({ left: chip.offsetLeft - 24, behavior: reduceMotion ? "auto" : "smooth" });
+      });
+    }, { rootMargin: "-40% 0px -55% 0px" });
+    Object.keys(chips).forEach(function (id) { var el = document.getElementById(id); if (el) spy.observe(el); });
+  }
+
+  /* ---------- gentle entrance: fade and rise once, when scrolled into view ---------- */
+  var reveals = $$("[data-reveal]");
+  if (reveals.length && !reduceMotion && "IntersectionObserver" in window) {
+    var rio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.remove("will-reveal"); rio.unobserve(en.target); }
+      });
+    }, { rootMargin: "0px 0px -8% 0px" });
+    reveals.forEach(function (el) {
+      // anything already on screen stays as it is, so nothing above the fold flickers
+      if (el.getBoundingClientRect().top < innerHeight) return;
+      el.classList.add("will-reveal");
+      rio.observe(el);
+    });
+  }
 })();

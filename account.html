@@ -7,12 +7,14 @@
   <meta name="description" content="Your EntraPlus account: your plan, seats, people and billing.">
   <meta name="robots" content="noindex">
   <link rel="canonical" href="https://entraplus.co.uk/account.html">
+  <meta name="theme-color" content="#0B1622" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#F5F8FA" media="(prefers-color-scheme: light)">
   <meta name="color-scheme" content="dark light">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <link rel="preload" href="/assets/fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/bricolage-display.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/assets/css/site.css">
   <script>
     (function () {
@@ -31,6 +33,7 @@
 </head>
 <body data-page="account">
   <a class="skip" href="#main">Skip to content</a>
+  <!-- shared header: keep identical on every page -->
   <header class="site-header">
     <div class="wrap header-row">
       <a class="brand" href="/" aria-label="EntraPlus home">
@@ -43,19 +46,22 @@
         <a href="/#pricing">Pricing</a>
         <a href="/#faq">Questions</a>
         <a href="/login.html" class="nav-login">Sign in</a>
+        <a class="btn btn-primary nav-cta" href="/register.html?plan=yearly">Start your free trial</a>
+        <a class="btn nav-cta" href="/#download">Download for Windows</a>
       </nav>
       <div class="header-actions">
-        <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch to light mode">
+        <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch theme">
           <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
           <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
         </button>
-        <a class="btn btn-primary btn-small" href="/#download">Download free</a>
+        <a class="btn btn-primary btn-small header-cta" href="/register.html?plan=yearly">Start free trial</a>
         <button class="icon-btn menu-btn" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
         </button>
       </div>
     </div>
   </header>
+  <!-- /shared header -->
   <main id="main" class="account-main wrap">
     <p class="muted" id="loading">Loading your account…</p>
     <div id="account-main" hidden>
@@ -99,7 +105,7 @@
         <div class="account-grid">
           <section class="panel" aria-labelledby="you-title">
             <h2 id="you-title">Your EntraPlus</h2>
-            <p class="plan-line"><span class="plan-badge" id="role-badge"></span> <span id="seat-line"></span></p>
+            <p class="plan-line"><span class="badge" id="role-badge"></span> <span id="seat-line"></span></p>
             <p class="muted" id="seat-text"></p>
             <div class="cta-row"><a class="btn btn-primary" id="download-app" href="/#download">Download EntraPlus</a></div>
             <div id="pcs" hidden>
@@ -110,7 +116,7 @@
 
           <section class="panel manager-only" aria-labelledby="billing-title" hidden>
             <h2 id="billing-title">Subscription</h2>
-            <p class="plan-line"><span class="plan-badge" id="sub-badge"></span> <span id="sub-plan"></span></p>
+            <p class="plan-line"><span class="badge" id="sub-badge"></span> <span id="sub-plan"></span></p>
             <dl class="facts" id="sub-facts"></dl>
             <div id="buy" hidden>
               <p class="muted">Choose a plan. You pick how many technician seats you need at checkout, and can change it any time.
@@ -167,7 +173,7 @@
             <p class="hint invite-hint" id="invite-hint"></p>
             <div class="invite-result" id="invite-result" role="status" aria-live="polite" hidden></div>
           </form>
-          <div class="table-wrap">
+          <div class="table-wrap" tabindex="0" role="region" aria-label="People table">
             <table class="people">
               <caption class="sr-only">People in your organisation, their role and whether they have a Pro seat</caption>
               <thead><tr><th scope="col">Person</th><th scope="col">Role</th><th scope="col">Pro seat</th><th scope="col">Status</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead>
@@ -183,7 +189,7 @@
 
         <section class="panel manager-only" aria-labelledby="history-title" hidden>
           <h2 id="history-title">Purchase history</h2>
-          <div class="table-wrap">
+          <div class="table-wrap" tabindex="0" role="region" aria-label="Purchase history table">
             <table class="people">
               <caption class="sr-only">Invoices for your organisation</caption>
               <thead><tr><th scope="col">Date</th><th scope="col">Invoice</th><th scope="col">Plan</th><th scope="col">Amount</th><th scope="col">Status</th></tr></thead>
@@ -195,19 +201,26 @@
       </div>
     </div>
   </main>
+  <!-- shared footer: keep identical on every page -->
   <footer class="site-footer">
     <div class="wrap footer-grid">
       <div>
         <a class="brand" href="/" aria-label="EntraPlus home"><img src="/favicon.svg" width="28" height="28" alt=""><span>EntraPlus</span></a>
-        <p class="aside">Microsoft Entra, Intune, Exchange and Active Directory admin in one calm Windows app. Made in the UK by a school IT technician.</p>
+        <p class="aside">Microsoft Entra, Intune, Exchange and Active Directory admin in one Windows app. Made in the UK by a school IT technician.</p>
       </div>
-      <nav aria-label="Footer">
+      <nav aria-labelledby="footer-product">
+        <h2 id="footer-product">Product</h2>
         <ul>
           <li><a href="/features.html">Features</a></li>
           <li><a href="/#pricing">Pricing</a></li>
           <li><a href="/#time">Time saved</a></li>
-          <li><a href="/#faq">Questions</a></li>
           <li><a href="/#download">Download</a></li>
+          <li><a href="/#faq">Questions</a></li>
+        </ul>
+      </nav>
+      <nav aria-labelledby="footer-company">
+        <h2 id="footer-company">Company</h2>
+        <ul>
           <li><a href="/login.html">Sign in</a></li>
           <li><a href="/privacy.html">Privacy and cookies</a></li>
           <li><a href="mailto:hello@entraplus.co.uk">Contact</a></li>
@@ -216,6 +229,7 @@
       <p class="legal">© <span id="year">2026</span> EntraPlus. EntraPlus is an independent product and is not affiliated with, endorsed by or sponsored by Microsoft. Microsoft, Microsoft 365, Microsoft Entra, Intune and Windows are trademarks of the Microsoft group of companies.</p>
     </div>
   </footer>
+  <!-- /shared footer -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>

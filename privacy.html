@@ -4,14 +4,27 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Privacy and cookies | EntraPlus</title>
-  <meta name="description" content="How EntraPlus handles your account details, payments and analytics cookies.">
+  <meta name="description" content="What EntraPlus stores about you and why, who takes payments, and how analytics cookies work. Your school's directory data stays on your PC.">
   <link rel="canonical" href="https://entraplus.co.uk/privacy.html">
+  <meta name="theme-color" content="#0B1622" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#F5F8FA" media="(prefers-color-scheme: light)">
   <meta name="color-scheme" content="dark light">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="EntraPlus">
+  <meta property="og:url" content="https://entraplus.co.uk/privacy.html">
+  <meta property="og:title" content="Privacy and cookies | EntraPlus">
+  <meta property="og:description" content="What EntraPlus stores about you and why, who takes payments, and how analytics cookies work. Your school's directory data stays on your PC.">
+  <meta property="og:image" content="https://entraplus.co.uk/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="EntraPlus showing a user's details, status badges and account actions">
+  <meta property="og:locale" content="en_GB">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <link rel="preload" href="/assets/fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/bricolage-display.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/assets/css/site.css">
   <script>
     (function () {
@@ -28,6 +41,7 @@
 </head>
 <body data-page="privacy">
   <a class="skip" href="#main">Skip to content</a>
+  <!-- shared header: keep identical on every page -->
   <header class="site-header">
     <div class="wrap header-row">
       <a class="brand" href="/" aria-label="EntraPlus home">
@@ -40,22 +54,25 @@
         <a href="/#pricing">Pricing</a>
         <a href="/#faq">Questions</a>
         <a href="/login.html" class="nav-login">Sign in</a>
+        <a class="btn btn-primary nav-cta" href="/register.html?plan=yearly">Start your free trial</a>
+        <a class="btn nav-cta" href="/#download">Download for Windows</a>
       </nav>
       <div class="header-actions">
-        <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch to light mode">
+        <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch theme">
           <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
           <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
         </button>
-        <a class="btn btn-primary btn-small" href="/#download">Download free</a>
+        <a class="btn btn-primary btn-small header-cta" href="/register.html?plan=yearly">Start free trial</a>
         <button class="icon-btn menu-btn" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
         </button>
       </div>
     </div>
   </header>
-  <main id="main" class="prose wrap">
+  <!-- /shared header -->
+  <main id="main" class="prose wrap-narrow">
     <h1>Privacy and cookies</h1>
-    <p class="muted">Last updated: October 2026. This is a starting template; have it checked before you take payments.</p>
+    <p class="muted">Last updated: October 2026.</p>
 
     <h2>The EntraPlus app</h2>
     <p>The app runs on your computer and talks directly to Microsoft and your own domain controllers. Information about your users, devices, groups and policies is never sent to us. The app stores its settings, sign-in cache and activity log on your computer only.</p>
@@ -65,24 +82,31 @@
 
     <h2>Analytics cookies</h2>
     <p>If you allow it, we use Google Analytics to understand which pages are useful. It isn't loaded unless you choose Allow analytics. You can change your mind at any time.</p>
-    <p><button type="button" class="btn btn-small" onclick="window.epResetConsent && window.epResetConsent()">Change my cookie choice</button></p>
+    <p><button type="button" class="btn btn-small" data-consent-reset hidden>Change my cookie choice</button></p>
 
     <h2>Your rights</h2>
     <p>You can ask to see, correct or delete the information we hold about you by emailing <a href="mailto:hello@entraplus.co.uk">hello@entraplus.co.uk</a>. You can also complain to the Information Commissioner's Office (ico.org.uk).</p>
   </main>
+  <!-- shared footer: keep identical on every page -->
   <footer class="site-footer">
     <div class="wrap footer-grid">
       <div>
         <a class="brand" href="/" aria-label="EntraPlus home"><img src="/favicon.svg" width="28" height="28" alt=""><span>EntraPlus</span></a>
-        <p class="aside">Microsoft Entra, Intune, Exchange and Active Directory admin in one calm Windows app. Made in the UK by a school IT technician.</p>
+        <p class="aside">Microsoft Entra, Intune, Exchange and Active Directory admin in one Windows app. Made in the UK by a school IT technician.</p>
       </div>
-      <nav aria-label="Footer">
+      <nav aria-labelledby="footer-product">
+        <h2 id="footer-product">Product</h2>
         <ul>
           <li><a href="/features.html">Features</a></li>
           <li><a href="/#pricing">Pricing</a></li>
           <li><a href="/#time">Time saved</a></li>
-          <li><a href="/#faq">Questions</a></li>
           <li><a href="/#download">Download</a></li>
+          <li><a href="/#faq">Questions</a></li>
+        </ul>
+      </nav>
+      <nav aria-labelledby="footer-company">
+        <h2 id="footer-company">Company</h2>
+        <ul>
           <li><a href="/login.html">Sign in</a></li>
           <li><a href="/privacy.html">Privacy and cookies</a></li>
           <li><a href="mailto:hello@entraplus.co.uk">Contact</a></li>
@@ -91,6 +115,14 @@
       <p class="legal">© <span id="year">2026</span> EntraPlus. EntraPlus is an independent product and is not affiliated with, endorsed by or sponsored by Microsoft. Microsoft, Microsoft 365, Microsoft Entra, Intune and Windows are trademarks of the Microsoft group of companies.</p>
     </div>
   </footer>
+  <!-- /shared footer -->
+  <div class="consent" id="consent" role="region" aria-label="Cookie choice" hidden>
+    <p>We'd like to use Google Analytics cookies to see which pages help people. Nothing loads unless you agree. <a href="/privacy.html">Privacy and cookies</a></p>
+    <div class="consent-actions">
+      <button type="button" class="btn btn-small" data-consent="denied">No thanks</button>
+      <button type="button" class="btn btn-primary btn-small" data-consent="granted">Allow analytics</button>
+    </div>
+  </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
